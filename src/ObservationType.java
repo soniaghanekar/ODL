@@ -32,6 +32,18 @@ public class ObservationType {
         return null;
     }
 
+    static int getIdFromName(String name, MyConnection conn) {
+        try {
+            String query = "select otid from ObservationType where name = '" + name + "'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("otid");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     static int insert(String name, int ocid, MyConnection conn) {
         try {
             String query = "INSERT INTO ObservationType values(?,?,?)";
@@ -41,12 +53,30 @@ public class ObservationType {
             pstmt.setInt(3, ocid);
             int ret = pstmt.executeUpdate();
 
-            if(ret != 0)
+            if (ret != 0)
                 return seqNum++;
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    static void insertBehavioralObservationType(String name, MyConnection conn) {
+        int ocid = ObservationCategory.getBehavioralCategoryId(conn);
+        if (ocid != 0)
+            insert(name, ocid, conn);
+    }
+
+    static void insertPhysiologicalObservationType(String name, MyConnection conn) {
+        int ocid = ObservationCategory.getPhysiologicalCategoryId(conn);
+        if (ocid != 0)
+            insert(name, ocid, conn);
+    }
+
+    static void insertPsychologicalObservationType(String name, MyConnection conn) {
+        int ocid = ObservationCategory.getPsychologicalCategoryId(conn);
+        if (ocid != 0)
+            insert(name, ocid, conn);
     }
 }

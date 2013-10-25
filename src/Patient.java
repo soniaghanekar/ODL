@@ -40,11 +40,12 @@ public class Patient {
     }
 
     static int insert(Date dob, String name, String address, String sex, String publicStatus, MyConnection conn) {
+        java.sql.Date longDOB = new java.sql.Date(dob.getTime());
         try {
             String query = "INSERT INTO patient values(?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);
-            pstmt.setDate(2, (java.sql.Date) dob);
+            pstmt.setDate(2, longDOB);
             pstmt.setString(3, name);
             pstmt.setString(4, address);
             pstmt.setString(5, sex);
@@ -59,4 +60,5 @@ public class Patient {
         }
         return 0;
     }
+
 }

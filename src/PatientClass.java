@@ -31,6 +31,19 @@ public class PatientClass {
         return null;
     }
 
+    static int getIdByName(String name, MyConnection conn) {
+        try {
+            String query = "select cid from PatientClass where name = '" + name + "'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("cid");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     static int insert(String name, MyConnection conn) {
         try {
             String query = "INSERT INTO PatientClass values(?,?)";
@@ -39,9 +52,21 @@ public class PatientClass {
             pstmt.setString(2, name);
             int ret = pstmt.executeUpdate();
 
-            if(ret != 0)
+            if (ret != 0)
                 return seqNum++;
 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    static int getIdForGeneralClass(MyConnection conn) {
+        try {
+            String query = "SELECT cid from PatientClass WHERE name = 'General'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("cid");
         } catch (SQLException e) {
             e.printStackTrace();
         }

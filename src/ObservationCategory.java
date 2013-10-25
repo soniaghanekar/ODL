@@ -30,7 +30,42 @@ public class ObservationCategory {
         return null;
     }
 
-    static int insert(int pid, String name, MyConnection conn) {
+    static int getBehavioralCategoryId(MyConnection conn) {
+        try {
+            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Behavioral'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("ocid");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    static int getPhysiologicalCategoryId(MyConnection conn) {
+        try {
+            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Physiological'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("ocid");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    static int getPsychologicalCategoryId(MyConnection conn) {
+        try {
+            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Psychological'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("ocid");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    static int insert(String name, MyConnection conn) {
         try {
             String query = "INSERT INTO ObservationCategory values(?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);

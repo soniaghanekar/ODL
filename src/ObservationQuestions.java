@@ -1,6 +1,8 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObservationQuestions {
     static int seqNum;
@@ -32,6 +34,21 @@ public class ObservationQuestions {
         return null;
     }
 
+    static List<ObservationQuestions> getByObservationType(int otid, MyConnection conn) {
+        try {
+            String query = "select * from ObservationQuestions where otid = " + otid;
+            ResultSet rs = conn.stmt.executeQuery(query);
+            ArrayList<ObservationQuestions> questions = new ArrayList<ObservationQuestions>();
+            while (rs.next())
+                questions.add(new ObservationQuestions(rs.getInt("qid"), rs.getString("text"), rs.getInt("otid")));
+            return questions;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     static int insert(String text, int otid, MyConnection conn) {
         try {
             String query = "INSERT INTO ObservationQuestions values(?,?,?)";
@@ -48,5 +65,11 @@ public class ObservationQuestions {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    static void insertByTypeName(String name, String text, MyConnection conn) {
+        int otid = ObservationType.getIdFromName(name, conn);
+        if(otid != 0)
+            insert(text, otid, conn);
     }
 }

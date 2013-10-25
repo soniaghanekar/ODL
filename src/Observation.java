@@ -38,15 +38,17 @@ public class Observation {
         return null;
     }
 
-    static int insert(int pid, int otid, Date obvTimestamp, Date recTimestamp, int qid, String answer,
-                      int ocid, MyConnection conn) {
+    static int insert(int pid, int otid, Date obvTimestamp, Date recTimestamp, int qid, String answer, MyConnection conn) {
+        java.sql.Date obvTime = new java.sql.Date(obvTimestamp.getTime());
+        java.sql.Date recTime = new java.sql.Date(recTimestamp.getTime());
+
         try {
             String query = "INSERT INTO Observation values(?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, pid);
             pstmt.setInt(2, otid);
-            pstmt.setDate(3, (java.sql.Date) obvTimestamp);
-            pstmt.setDate(4, (java.sql.Date) recTimestamp);
+            pstmt.setDate(3, obvTime);
+            pstmt.setDate(4, recTime);
             pstmt.setInt(5, qid);
             pstmt.setString(6, answer);
             int ret = pstmt.executeUpdate();

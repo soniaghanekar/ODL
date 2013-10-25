@@ -13,6 +13,9 @@ public class MyConnection {
         try {
             this.conn = DriverManager.getConnection(jdbcURL, user, passwd);
             this.stmt = conn.createStatement();
+            stmt.execute("alter session set nls_comp=ansi");
+            stmt.execute("alter session set nls_sort=binary_ci");
+            stmt.execute("alter session set nls_comp=linguistic");
         } catch (SQLException e) {
             e.printStackTrace();
         }

@@ -1,0 +1,8 @@
+drop table patientclassobvtypemapper;
+drop table observation;
+drop table observationquestions;
+drop table observationtype;
+drop table observationcategory;
+drop table patientclassrelationship;
+drop table patientclass;
+drop table patient;
