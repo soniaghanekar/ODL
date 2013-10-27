@@ -79,4 +79,10 @@ public class ObservationType {
         if (ocid != 0)
             insert(name, ocid, conn);
     }
+
+    static void insertGeneralObservationType(String name, MyConnection conn) {
+        int ocid = ObservationCategory.getGeneralCategoryId(conn);
+        if (ocid != 0)
+            insert(name, ocid, conn);
+    }
 }

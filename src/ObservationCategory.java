@@ -53,9 +53,22 @@ public class ObservationCategory {
         }
         return 0;
     }
+
     static int getPsychologicalCategoryId(MyConnection conn) {
         try {
             String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Psychological'";
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return rs.getInt("ocid");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    static int getGeneralCategoryId(MyConnection conn) {
+        try {
+            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'General'";
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next())
                 return rs.getInt("ocid");

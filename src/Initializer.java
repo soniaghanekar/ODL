@@ -54,6 +54,7 @@ public class Initializer {
         ObservationCategory.insert("Behavioral", myConn);
         ObservationCategory.insert("Physiological", myConn);
         ObservationCategory.insert("Psychological", myConn);
+        ObservationCategory.insert("General", myConn);
     }
 
     private static void insertObservationTypes(MyConnection myConn) {

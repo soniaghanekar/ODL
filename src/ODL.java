@@ -132,12 +132,31 @@ public class ODL {
                 case '1':
                     enterObservations(patientId);
                     break;
+                case '2':
+                    enterNewObservationType();
+                    break;
                 case '3':
                     shouldContinue = false;
                     break;
                 default:
                     System.out.println("Please Select An Option From The Allowed Values");
             }
+        }
+    }
+
+    private static void enterNewObservationType() {
+        System.out.println("Enter the observation type name :");
+        String name = input.nextLine();
+        ObservationType.insertGeneralObservationType(name, myConn);
+        while(true) {
+            System.out.println("Enter additional information question for the new type:");
+            String question = input.nextLine();
+            ObservationQuestions.insertByTypeName("General", question, myConn);
+            System.out.println("Would you like to get any more additional information? (y/n)");
+            char choice = input.nextLine().toLowerCase().charAt(0);
+
+            if(choice == 'n')
+                return;
         }
     }
 
