@@ -101,8 +101,8 @@ public class ODL {
         char choice;
         boolean shouldContinue = true;
         while(shouldContinue) {
-            System.out.println("1. Enter new observation data");
-            System.out.println("2. Add a new observation type");
+            System.out.println("1. View Observations");
+            System.out.println("2. View MyAlert");
             System.out.println("3. Go to patient login homepage");
             choice = input.nextLine().charAt(0);
 
@@ -122,8 +122,8 @@ public class ODL {
         char choice;
         boolean shouldContinue = true;
         while(shouldContinue) {
-            System.out.println("1. View Observations");
-            System.out.println("2. View MyAlert");
+            System.out.println("1. Enter new observation data");
+            System.out.println("2. Add a new observation type");
             System.out.println("3. Go to patient login homepage");
             choice = input.nextLine().charAt(0);
 
