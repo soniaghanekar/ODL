@@ -1,7 +1,4 @@
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Timestamp;
+import java.sql.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -39,25 +36,19 @@ public class Observation {
     }
 
     static int insert(int pid, int otid, Date obvTimestamp, Date recTimestamp, int qid, String answer, MyConnection conn) {
-        java.sql.Date obvTime = new java.sql.Date(obvTimestamp.getTime());
-        obvTime.setTime(obvTimestamp.getTime());
-        System.out.println("IN insert!!");
-        java.sql.Date recTime = new java.sql.Date(recTimestamp.getTime());
-        recTime.setTime(recTimestamp.getTime());
-        System.out.println("IN insert!!");
+        Time obvTime = new Time(obvTimestamp.getTime());
+        Time recTime = new Time(recTimestamp.getTime());
 
         try {
             String query = "INSERT INTO Observation values(?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, pid);
             pstmt.setInt(2, otid);
-            pstmt.setDate(3, obvTime);
-            pstmt.setDate(4, recTime);
+            pstmt.setTime(3, obvTime);
+            pstmt.setTime(4, recTime);
             pstmt.setInt(5, qid);
             pstmt.setString(6, answer);
-            System.out.println("before execute update!!");
             int ret = pstmt.executeUpdate();
-            System.out.println("After execute update!!");
 
             if(ret != 0)
                 return pid;
