@@ -140,15 +140,15 @@ public class ODL {
     }
 
     private static void enterObservations(int patientId) {
-        List<ObservationType> availableTypes = getObservationTypesForPatient(patientId);
+        List<Integer> availableTypes = getObservationTypesForPatient(patientId);
 
         System.out.println("Please enter the observation type no that you would like to enter: ");
         for (int i = 0; i < availableTypes.size(); i++)
-            System.out.println((i + 1) + ". " + availableTypes.get(i).name);
+            System.out.println((i + 1) + ". " + ObservationType.getById(availableTypes.get(i), myConn).name);
 
         int typeNo = Integer.parseInt(input.nextLine());
         try {
-            int otid = availableTypes.get(typeNo - 1).otid;
+            int otid = availableTypes.get(typeNo - 1);
             List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, myConn);
             for (ObservationQuestions question : questions) {
                 System.out.println(question.text);
@@ -163,16 +163,13 @@ public class ODL {
         }
     }
 
-    private static List<ObservationType> getObservationTypesForPatient(int patientId) {
-        Set<ObservationType> availableTypesSet = new HashSet<ObservationType>();
+    private static List<Integer> getObservationTypesForPatient(int patientId) {
+        Set<Integer> availableTypesSet = new HashSet<Integer>();
         List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, myConn);
         for (Integer cid : cids) {
-            List<Integer> otids = PatientClassObservationTypeMapper.getByClass(cid, myConn);
-
-            for (Integer otid : otids)
-                availableTypesSet.add(ObservationType.getById(otid, myConn));
+            availableTypesSet.addAll(PatientClassObservationTypeMapper.getByClass(cid, myConn));
         }
-        return new ArrayList<ObservationType>(availableTypesSet);
+        return new ArrayList<Integer>(availableTypesSet);
     }
 
     private static Date getObservationDate() {
