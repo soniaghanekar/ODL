@@ -115,40 +115,56 @@ public class ODL {
     }
 
     private static void enterObservations(int patientId, MyConnection conn, Scanner input) {
-        Date obvDate = getObservationDate(input);
-        Date recordDate = new Date();
-
-        System.out.println("Please answer the following questions: ");
+        Set<ObservationType> availableTypesSet = new HashSet<ObservationType>();
         List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, conn);
         for(Integer cid : cids) {
             List<Integer> otids = PatientClassObservationTypeMapper.getByClass(cid, conn);
 
-            for (Integer otid: otids) {
-                ObservationType type = ObservationType.getById(otid, conn);
-                System.out.println("Observation Type: " + type.name);
-                List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, conn);
-
-                for(ObservationQuestions question: questions) {
-                    System.out.println(question.text);
-                    String answer = input.nextLine();
-                    System.out.println(" quesid = " + question.qid + " answer = " + answer);
-                    Observation.insert(patientId, otid, obvDate, recordDate, question.qid, answer, conn);
-                }
-            }
+            for (Integer otid: otids)
+                availableTypesSet.add(ObservationType.getById(otid, conn));
         }
+        List<ObservationType> availableTypes = new ArrayList<ObservationType>(availableTypesSet);
+
+        System.out.println("Please enter the observation type no that you would like to enter: ");
+        for(int i=0; i<availableTypes.size(); i++)
+            System.out.println((i+1) + ". " + availableTypes.get(i).name);
+
+        int typeNo = Integer.parseInt(input.nextLine());
+        try{
+            int otid = availableTypes.get(typeNo - 1).otid;
+            List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, conn);
+            for(ObservationQuestions question: questions) {
+                System.out.println(question.text);
+                String answer = input.nextLine();
+                Date obsDate = getObservationDate(input);
+                Date recordDate = new Date();
+                Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, conn);
+            }
+
+        } catch(Exception e) {
+            System.out.println("Invalid input.");
+        }
+
+
     }
 
     private static Date getObservationDate(Scanner input) {
-        try {
-            System.out.println("Enter date and time of the observation (in MM/dd/yyyy hh:mm AM/PM ex: 10/04/2013 10:15 AM): ");
-            String date = input.nextLine();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-            return dateFormat.parse(date);
 
-        } catch (ParseException e) {
-            System.out.println("Please enter date and time in proper format ex: 10/04/2013 10:15 AM");
+        boolean improperFormat = true;
+        Date obvDate = null;
+        while(improperFormat) {
+            try {
+                System.out.println("Enter date and time of the observation (in MM/dd/yyyy hh:mm AM/PM ex: 10/04/2013 10:15 AM): ");
+                String date = input.nextLine();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
+                obvDate = dateFormat.parse(date);
+                improperFormat = false;
+
+            } catch (ParseException e) {
+                System.out.println("Please enter date and time in proper format ex: 10/04/2013 10:15 AM");
+            }
         }
-        return null;
+        return obvDate;
     }
 
     private static void registerPatient(MyConnection myConn, Scanner input) throws ParseException {
