@@ -63,23 +63,27 @@ public class ODL {
         System.out.println("Enter password: ");
         String password = input.nextLine();
 
-        Patient patient = Patient.getById(Integer.parseInt(patientId), myConn);
+        int pid = Integer.parseInt(patientId);
+        Patient patient = Patient.getById(pid, myConn);
         if (patient != null && patient.password.equals(password)) {
             boolean logout = false;
             char choice;
 
             while (!logout) {
                 System.out.println("1. Enter Data");
-                System.out.println("2. Logout");
+                System.out.println("2. View Data");
+                System.out.println("3. Logout");
                 choice = input.nextLine().charAt(0);
 
                 switch (choice) {
 
                     case '1':
-                        enterData(Integer.parseInt(patientId));
+                        enterData(pid);
                         break;
-
                     case '2':
+                        viewData(pid);
+                        break;
+                    case '3':
                         logout = true;
                         System.out.println("You have been successfully logged out");
                         break;
@@ -93,7 +97,7 @@ public class ODL {
             System.out.println("Invalid Patient Id/Password pair. Please make sure you enter correct credentials");
     }
 
-    private static void enterData(int patientId) {
+    private static void viewData(int patientId) {
         char choice;
         boolean shouldContinue = true;
         while(shouldContinue) {
@@ -104,11 +108,31 @@ public class ODL {
 
             switch(choice) {
                 case '1':
+                    break;
+                case '3':
+                    shouldContinue = false;
+                    break;
+                default:
+                    System.out.println("Please Select An Option From The Allowed Values");
+            }
+        }
+    }
+
+    private static void enterData(int patientId) {
+        char choice;
+        boolean shouldContinue = true;
+        while(shouldContinue) {
+            System.out.println("1. View Observations");
+            System.out.println("2. View MyAlert");
+            System.out.println("3. Go to patient login homepage");
+            choice = input.nextLine().charAt(0);
+
+            switch(choice) {
+                case '1':
                     enterObservations(patientId);
                 case '3':
                     shouldContinue = false;
                     break;
-
                 default:
                     System.out.println("Please Select An Option From The Allowed Values");
             }
@@ -116,25 +140,17 @@ public class ODL {
     }
 
     private static void enterObservations(int patientId) {
-        Set<ObservationType> availableTypesSet = new HashSet<ObservationType>();
-        List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, myConn);
-        for(Integer cid : cids) {
-            List<Integer> otids = PatientClassObservationTypeMapper.getByClass(cid, myConn);
-
-            for (Integer otid: otids)
-                availableTypesSet.add(ObservationType.getById(otid, myConn));
-        }
-        List<ObservationType> availableTypes = new ArrayList<ObservationType>(availableTypesSet);
+        List<ObservationType> availableTypes = getObservationTypesForPatient(patientId);
 
         System.out.println("Please enter the observation type no that you would like to enter: ");
-        for(int i=0; i<availableTypes.size(); i++)
-            System.out.println((i+1) + ". " + availableTypes.get(i).name);
+        for (int i = 0; i < availableTypes.size(); i++)
+            System.out.println((i + 1) + ". " + availableTypes.get(i).name);
 
         int typeNo = Integer.parseInt(input.nextLine());
-        try{
+        try {
             int otid = availableTypes.get(typeNo - 1).otid;
             List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, myConn);
-            for(ObservationQuestions question: questions) {
+            for (ObservationQuestions question : questions) {
                 System.out.println(question.text);
                 String answer = input.nextLine();
                 Date obsDate = getObservationDate();
@@ -142,11 +158,21 @@ public class ODL {
                 Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
             }
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             System.out.println("Invalid input.");
         }
+    }
 
+    private static List<ObservationType> getObservationTypesForPatient(int patientId) {
+        Set<ObservationType> availableTypesSet = new HashSet<ObservationType>();
+        List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, myConn);
+        for (Integer cid : cids) {
+            List<Integer> otids = PatientClassObservationTypeMapper.getByClass(cid, myConn);
 
+            for (Integer otid : otids)
+                availableTypesSet.add(ObservationType.getById(otid, myConn));
+        }
+        return new ArrayList<ObservationType>(availableTypesSet);
     }
 
     private static Date getObservationDate() {
