@@ -216,7 +216,7 @@ public class ODL {
             System.out.println("Please Enter Public Status properly. The only available options are y or n");
             return false;
         }
-        if (password.trim().length() <= 6) {
+        if (password.trim().length() < 6) {
             System.out.println("Please make sure that password is at-least 6 character long");
             return false;
         }
