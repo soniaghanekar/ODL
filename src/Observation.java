@@ -1,6 +1,8 @@
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Observation {
 
@@ -58,4 +60,23 @@ public class Observation {
         }
         return 0;
     }
+
+    static List<Observation> filter(int pid, int otid, Date beginDate, Date endDate, MyConnection conn) {
+        List<Observation> observations = new ArrayList<Observation>();
+        try {
+            String query = "select * from Observation where pid = " + pid + " AND otid = " + otid +
+                    " obvTimestamp >= " + beginDate + " AND obvTimestamp <= " + endDate;
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next()){
+                observations.add(Observation.getById(pid, otid, rs.getInt("qid"), rs.getDate("obvTimestamp"), conn));
+            }
+            return observations;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

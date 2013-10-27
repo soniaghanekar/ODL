@@ -108,7 +108,7 @@ public class ODL {
 
             switch(choice) {
                 case '1':
-                    enterObservations(patientId);
+                    viewObservations(patientId);
                     break;
                 case '3':
                     shouldContinue = false;
@@ -179,6 +179,29 @@ public class ODL {
                 Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
             }
 
+        } catch (Exception e) {
+            System.out.println("Invalid input.");
+        }
+    }
+
+    private static void viewObservations(int patientId) {
+        List<Integer> availableTypes = getObservationTypesForPatient(patientId);
+
+        System.out.println("Please select the observation type no: ");
+        for (int i = 0; i < availableTypes.size(); i++)
+            System.out.println((i + 1) + ". " + ObservationType.getById(availableTypes.get(i), myConn).name);
+        int typeNo = Integer.parseInt(input.nextLine());
+        System.out.println("Please enter begin date for filter in mm/dd/yyyy format eg. 03/08/1988:");
+        String beginDate = input.nextLine();
+        System.out.println("Please enter end date for filter in mm/dd/yyyy format eg. 03/08/1988:");
+        String endDate = input.nextLine();
+        try {
+            List<Observation> observations = Observation.filter(patientId, availableTypes.get(typeNo - 1),
+                    getDateFromString(beginDate, "MM/dd/yyyy"), getDateFromString(endDate, "MM/dd/yyyy"), myConn);
+            for(Observation o: observations){
+                System.out.println(o.pid + " " + o.otid + " " + o.obvTimestamp + " " + o.recTimestamp + " " +
+                        o.qid +  " " + o.answer);
+            }
         } catch (Exception e) {
             System.out.println("Invalid input.");
         }
