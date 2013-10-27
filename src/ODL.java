@@ -162,10 +162,12 @@ public class ODL {
         String sex = input.nextLine();
         System.out.println("Do you want your profile to be public? (y/n):");
         String publicStatus = input.nextLine();
+        System.out.println("Please enter the password (minimum 6 character long):");
+        String password = input.nextLine();
 
-        if (checkArgumentsForPatient(dob, sex, publicStatus)) {
+        if (checkArgumentsForPatient(dob, sex, publicStatus, password)) {
             int patientId = Patient.insert(getDateFromString(dob), name, address, sex.toLowerCase(),
-                    publicStatus.toLowerCase(), myConn);
+                    publicStatus.toLowerCase(), password.trim(), myConn);
             if (patientId > 0) {
                 System.out.println("A patient has been created with id " + patientId + ".");
                 System.out.println("Please remember this id as this will be used to login next time");
@@ -183,7 +185,7 @@ public class ODL {
         return formatter.parse(dob);
     }
 
-    private static boolean checkArgumentsForPatient(String dob, String sex, String publicStatus) {
+    private static boolean checkArgumentsForPatient(String dob, String sex, String publicStatus, String password) {
         try {
             getDateFromString(dob);
         } catch (Exception e) {
@@ -198,6 +200,11 @@ public class ODL {
             System.out.println("Please Enter Public Status properly. The only available options are y or n");
             return false;
         }
+        if (password.trim().length() <= 6) {
+            System.out.println("Please make sure that password is at-least 6 character long");
+            return false;
+        }
+
         return true;
     }
 

@@ -105,7 +105,8 @@ public class Initializer {
     private static void createTables(MyConnection myConn) throws SQLException {
         myConn.stmt.executeUpdate("CREATE TABLE Patient " +
                 "(pid INTEGER PRIMARY KEY, dob DATE, " +
-                "name VARCHAR2(25), address VARCHAR2(30), sex VARCHAR2(1), publicStatus VARCHAR2(1))");
+                "name VARCHAR2(25), address VARCHAR2(30), sex VARCHAR2(1), publicStatus VARCHAR2(1), " +
+                "password VARCHAR2(30))");
 
         myConn.stmt.executeUpdate("CREATE TABLE PatientClass " +
                 "(cid INTEGER PRIMARY KEY, name VARCHAR2(25))");
