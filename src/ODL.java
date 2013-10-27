@@ -59,18 +59,20 @@ public class ODL {
     private static void loginAsPatient(MyConnection myConn, Scanner input) {
         System.out.println("Enter patient id: ");
         String patientId = input.nextLine();
+        System.out.println("Enter password: ");
+        String password = input.nextLine();
 
         Patient patient = Patient.getById(Integer.parseInt(patientId), myConn);
-        if(patient != null) {
+        if (patient != null && patient.password.equals(password)) {
             boolean logout = false;
             char choice;
 
-            while(!logout) {
+            while (!logout) {
                 System.out.println("1. Enter Data");
                 System.out.println("2. Logout");
                 choice = input.nextLine().charAt(0);
 
-                switch(choice) {
+                switch (choice) {
 
                     case '1':
                         enterData(Integer.parseInt(patientId), myConn, input);
@@ -86,9 +88,8 @@ public class ODL {
 
                 }
             }
-        }
-        else
-            System.out.println("Patient with id " + patientId + " does not exist");
+        } else
+            System.out.println("Invalid Patient Id/Password pair. Please make sure you enter correct credentials");
     }
 
     private static void enterData(int patientId, MyConnection conn, Scanner input) {
@@ -142,8 +143,7 @@ public class ODL {
             System.out.println("Enter date and time of the observation (in MM/dd/yyyy hh:mm AM/PM ex: 10/04/2013 10:15 AM): ");
             String date = input.nextLine();
             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-            Date obvDate = dateFormat.parse(date);
-            return obvDate;
+            return dateFormat.parse(date);
 
         } catch (ParseException e) {
             System.out.println("Please enter date and time in proper format ex: 10/04/2013 10:15 AM");
