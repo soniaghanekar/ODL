@@ -5,16 +5,17 @@ import java.util.*;
 
 public class ODL {
 
+    public static final Scanner input = new Scanner(System.in);
+    public static MyConnection myConn = null;
+
     public static void main(String[] args) {
         try {
 
             Class.forName("oracle.jdbc.driver.OracleDriver");
 
-            MyConnection myConn = null;
             ResultSet rs = null;
             boolean shouldContinue = true;
             char choice;
-            Scanner input = new Scanner(System.in);
 
             try {
                 myConn = new MyConnection();
@@ -26,11 +27,11 @@ public class ODL {
 
                     switch (choice) {
                         case '1':
-                            registerPatient(myConn, input);
+                            registerPatient();
                             break;
 
                         case '2':
-                            loginAsPatient(myConn, input);
+                            loginAsPatient();
                             break;
 
                         case '3':
@@ -56,7 +57,7 @@ public class ODL {
         }
     }
 
-    private static void loginAsPatient(MyConnection myConn, Scanner input) {
+    private static void loginAsPatient() {
         System.out.println("Enter patient id: ");
         String patientId = input.nextLine();
         System.out.println("Enter password: ");
@@ -75,7 +76,7 @@ public class ODL {
                 switch (choice) {
 
                     case '1':
-                        enterData(Integer.parseInt(patientId), myConn, input);
+                        enterData(Integer.parseInt(patientId));
                         break;
 
                     case '2':
@@ -92,7 +93,7 @@ public class ODL {
             System.out.println("Invalid Patient Id/Password pair. Please make sure you enter correct credentials");
     }
 
-    private static void enterData(int patientId, MyConnection conn, Scanner input) {
+    private static void enterData(int patientId) {
         char choice;
         boolean shouldContinue = true;
         while(shouldContinue) {
@@ -103,7 +104,7 @@ public class ODL {
 
             switch(choice) {
                 case '1':
-                    enterObservations(patientId, conn, input);
+                    enterObservations(patientId);
                 case '3':
                     shouldContinue = false;
                     break;
@@ -114,14 +115,14 @@ public class ODL {
         }
     }
 
-    private static void enterObservations(int patientId, MyConnection conn, Scanner input) {
+    private static void enterObservations(int patientId) {
         Set<ObservationType> availableTypesSet = new HashSet<ObservationType>();
-        List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, conn);
+        List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, myConn);
         for(Integer cid : cids) {
-            List<Integer> otids = PatientClassObservationTypeMapper.getByClass(cid, conn);
+            List<Integer> otids = PatientClassObservationTypeMapper.getByClass(cid, myConn);
 
             for (Integer otid: otids)
-                availableTypesSet.add(ObservationType.getById(otid, conn));
+                availableTypesSet.add(ObservationType.getById(otid, myConn));
         }
         List<ObservationType> availableTypes = new ArrayList<ObservationType>(availableTypesSet);
 
@@ -132,13 +133,13 @@ public class ODL {
         int typeNo = Integer.parseInt(input.nextLine());
         try{
             int otid = availableTypes.get(typeNo - 1).otid;
-            List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, conn);
+            List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, myConn);
             for(ObservationQuestions question: questions) {
                 System.out.println(question.text);
                 String answer = input.nextLine();
-                Date obsDate = getObservationDate(input);
+                Date obsDate = getObservationDate();
                 Date recordDate = new Date();
-                Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, conn);
+                Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
             }
 
         } catch(Exception e) {
@@ -148,26 +149,20 @@ public class ODL {
 
     }
 
-    private static Date getObservationDate(Scanner input) {
-
-        boolean improperFormat = true;
-        Date obvDate = null;
-        while(improperFormat) {
+    private static Date getObservationDate() {
+        while (true) {
             try {
                 System.out.println("Enter date and time of the observation (in MM/dd/yyyy hh:mm AM/PM ex: 10/04/2013 10:15 AM): ");
                 String date = input.nextLine();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a");
-                obvDate = dateFormat.parse(date);
-                improperFormat = false;
-
+                return getDateFromString(date, "MM/dd/yyyy hh:mm a");
             } catch (ParseException e) {
                 System.out.println("Please enter date and time in proper format ex: 10/04/2013 10:15 AM");
             }
         }
-        return obvDate;
+
     }
 
-    private static void registerPatient(MyConnection myConn, Scanner input) throws ParseException {
+    private static void registerPatient() throws ParseException {
         System.out.println("Please enter patients name:");
         String name = input.nextLine();
         System.out.println("Please enter patients address:");
@@ -182,7 +177,7 @@ public class ODL {
         String password = input.nextLine();
 
         if (checkArgumentsForPatient(dob, sex, publicStatus, password)) {
-            int patientId = Patient.insert(getDateFromString(dob), name, address, sex.toLowerCase(),
+            int patientId = Patient.insert(getDateFromString(dob, "MM/dd/yyyy"), name, address, sex.toLowerCase(),
                     publicStatus.toLowerCase(), password.trim(), myConn);
             if (patientId > 0) {
                 System.out.println("A patient has been created with id " + patientId + ".");
@@ -195,15 +190,15 @@ public class ODL {
         }
     }
 
-    private static Date getDateFromString(String dob) throws ParseException {
-        SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy", Locale.ENGLISH);
+    private static Date getDateFromString(String dob, String format) throws ParseException {
+        SimpleDateFormat formatter = new SimpleDateFormat(format);
         formatter.setLenient(false);
         return formatter.parse(dob);
     }
 
     private static boolean checkArgumentsForPatient(String dob, String sex, String publicStatus, String password) {
         try {
-            getDateFromString(dob);
+            getDateFromString(dob, "MM/dd/yyyy");
         } catch (Exception e) {
             System.out.println("Please Enter date in MM dd yyyy format example 03 08 1988");
             return false;
