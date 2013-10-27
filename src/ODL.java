@@ -108,6 +108,7 @@ public class ODL {
 
             switch(choice) {
                 case '1':
+                    enterObservations(patientId);
                     break;
                 case '3':
                     shouldContinue = false;
@@ -130,6 +131,7 @@ public class ODL {
             switch(choice) {
                 case '1':
                     enterObservations(patientId);
+                    break;
                 case '3':
                     shouldContinue = false;
                     break;
