@@ -8,7 +8,7 @@ public class ObservationQuestions {
     static int seqNum;
 
     static {
-        seqNum = 1;
+        seqNum = 0;
     }
 
     int qid;
@@ -19,6 +19,15 @@ public class ObservationQuestions {
         this.qid = qid;
         this.text = text;
         this.otid = otid;
+    }
+
+    private static void setSeqNum(MyConnection connection) throws SQLException {
+        if(seqNum == 0) {
+            String query = "SELECT MAX(qid) as qid from observationquestions";
+            ResultSet resultSet = connection.stmt.executeQuery(query);
+            while (resultSet.next())
+                seqNum = resultSet.getInt("qid") + 1;
+        }
     }
 
     static ObservationQuestions getById(int qid, MyConnection conn) {
@@ -51,6 +60,7 @@ public class ObservationQuestions {
 
     static int insert(String text, int otid, MyConnection conn) {
         try {
+            setSeqNum(conn);
             String query = "INSERT INTO ObservationQuestions values(?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);
@@ -69,7 +79,7 @@ public class ObservationQuestions {
 
     static void insertByTypeName(String name, String text, MyConnection conn) {
         int otid = ObservationType.getIdFromName(name, conn);
-        if(otid != 0)
-            insert(text, otid, conn);
+        if(otid != 0){
+            insert(text, otid, conn);}
     }
 }

@@ -151,7 +151,7 @@ public class ODL {
         while(true) {
             System.out.println("Enter additional information question for the new type:");
             String question = input.nextLine();
-            ObservationQuestions.insertByTypeName("General", question, myConn);
+            ObservationQuestions.insertByTypeName(name, question, myConn);
             System.out.println("Would you like to get any more additional information? (y/n)");
             char choice = input.nextLine().toLowerCase().charAt(0);
 

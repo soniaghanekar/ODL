@@ -6,7 +6,7 @@ public class ObservationType {
     static int seqNum;
 
     static {
-        seqNum = 1;
+        seqNum = 0;
     }
 
     int otid;
@@ -46,6 +46,7 @@ public class ObservationType {
 
     static int insert(String name, int ocid, MyConnection conn) {
         try {
+            setSeqNum(conn);
             String query = "INSERT INTO ObservationType values(?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);
@@ -60,6 +61,15 @@ public class ObservationType {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    private static void setSeqNum(MyConnection connection) throws SQLException {
+        if(seqNum == 0) {
+            String query = "SELECT MAX(otid) as otid from ObservationType";
+            ResultSet resultSet = connection.stmt.executeQuery(query);
+            while (resultSet.next())
+                seqNum = resultSet.getInt("otid") + 1;
+        }
     }
 
     static void insertBehavioralObservationType(String name, MyConnection conn) {
