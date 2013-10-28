@@ -197,12 +197,15 @@ public class ODL {
         String endDate = input.nextLine();
         try {
             List<Observation> observations = Observation.filter(patientId, availableTypes.get(typeNo - 1),
-                    getDateFromString(beginDate, "MM/dd/yyyy"), getDateFromString(endDate, "MM/dd/yyyy"), myConn);
+                    getDateFromString(beginDate + " 0:0:1", "MM/dd/yyyy HH:mm:ss"),
+                    getDateFromString(endDate + " 23:59:59", "MM/dd/yyyy HH:mm:ss"), myConn);
+            System.out.println("after filter");
             for(Observation o: observations){
                 System.out.println(o.pid + " " + o.otid + " " + o.obvTimestamp + " " + o.recTimestamp + " " +
                         o.qid +  " " + o.answer);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("Invalid input.");
         }
     }
@@ -210,9 +213,10 @@ public class ODL {
     private static List<Integer> getObservationTypesForPatient(int patientId) {
         Set<Integer> availableTypesSet = new HashSet<Integer>();
         List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, myConn);
-        for (Integer cid : cids) {
+
+        for (Integer cid : cids)
             availableTypesSet.addAll(PatientClassObservationTypeMapper.getByClass(cid, myConn));
-        }
+
         return new ArrayList<Integer>(availableTypesSet);
     }
 

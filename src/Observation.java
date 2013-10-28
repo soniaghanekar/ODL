@@ -1,5 +1,4 @@
 import java.sql.*;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,13 +22,20 @@ public class Observation {
     }
 
     static Observation getById(int pid, int otid, int qid, Date obvTimestamp, MyConnection conn) {
+        Timestamp obvTime = new Timestamp(obvTimestamp.getTime());
+
         try {
-            String query = "select * from Observation where pid = " + pid + " AND otid = " + otid +
-                    " AND qid = " + qid + " AND obvTimestamp = " + obvTimestamp;
-            ResultSet rs = conn.stmt.executeQuery(query);
+            String query = "select * from Observation where pid = ? AND otid = ? AND qid = ? AND obvTimestamp = ?";
+            PreparedStatement pstmt = conn.conn.prepareStatement(query);
+            pstmt.setInt(1, pid);
+            pstmt.setInt(2, otid);
+            pstmt.setInt(3, qid);
+            pstmt.setTimestamp(4, obvTime);
+            ResultSet rs = pstmt.executeQuery();
+
             while (rs.next())
-                return new Observation(rs.getInt("pid"), rs.getInt("otid"), rs.getDate("obvTimestamp"),
-                        rs.getDate("recTimestamp"), rs.getInt("qid"), rs.getString("answer"));
+                return new Observation(rs.getInt("pid"), rs.getInt("otid"), rs.getTimestamp("obvTimestamp"),
+                        rs.getTimestamp("recTimestamp"), rs.getInt("qid"), rs.getString("answer"));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -38,16 +44,16 @@ public class Observation {
     }
 
     static int insert(int pid, int otid, Date obvTimestamp, Date recTimestamp, int qid, String answer, MyConnection conn) {
-        Time obvTime = new Time(obvTimestamp.getTime());
-        Time recTime = new Time(recTimestamp.getTime());
+        Timestamp obvTime = new Timestamp(obvTimestamp.getTime());
+        Timestamp recTime = new Timestamp(recTimestamp.getTime());
 
         try {
             String query = "INSERT INTO Observation values(?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, pid);
             pstmt.setInt(2, otid);
-            pstmt.setTime(3, obvTime);
-            pstmt.setTime(4, recTime);
+            pstmt.setTimestamp(3, obvTime);
+            pstmt.setTimestamp(4, recTime);
             pstmt.setInt(5, qid);
             pstmt.setString(6, answer);
             int ret = pstmt.executeUpdate();
@@ -63,13 +69,20 @@ public class Observation {
 
     static List<Observation> filter(int pid, int otid, Date beginDate, Date endDate, MyConnection conn) {
         List<Observation> observations = new ArrayList<Observation>();
+        Timestamp beginTimestamp = new Timestamp(beginDate.getTime());
+        Timestamp endTimestamp = new Timestamp(endDate.getTime());
+
         try {
-            String query = "select * from Observation where pid = " + pid + " AND otid = " + otid +
-                    " obvTimestamp >= " + beginDate + " AND obvTimestamp <= " + endDate;
-            ResultSet rs = conn.stmt.executeQuery(query);
-            while (rs.next()){
-                observations.add(Observation.getById(pid, otid, rs.getInt("qid"), rs.getDate("obvTimestamp"), conn));
-            }
+            String query = "select * from Observation where pid = ? AND otid = ? AND obvTimestamp between ? and ?";
+            PreparedStatement pstmt = conn.conn.prepareStatement(query);
+            pstmt.setInt(1, pid);
+            pstmt.setInt(2, otid);
+            pstmt.setTimestamp(3, beginTimestamp);
+            pstmt.setTimestamp(4, endTimestamp);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next())
+                observations.add(Observation.getById(pid, otid, rs.getInt("qid"), rs.getTimestamp("obvTimestamp"), conn));
+
             return observations;
 
         } catch (SQLException e) {
@@ -77,6 +90,5 @@ public class Observation {
         }
         return null;
     }
-
 
 }
