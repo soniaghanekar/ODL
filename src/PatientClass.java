@@ -7,7 +7,7 @@ public class PatientClass {
     static int seqNum;
 
     static {
-        seqNum = 1;
+        seqNum = 0;
     }
 
     int cid;
@@ -16,6 +16,15 @@ public class PatientClass {
     private PatientClass(int cid, String name) {
         this.cid = cid;
         this.name = name;
+    }
+
+    private static void setSeqNum(MyConnection connection) throws SQLException {
+        if(seqNum == 0) {
+            String query = "SELECT MAX(cid) as cid from PatientClass";
+            ResultSet resultSet = connection.stmt.executeQuery(query);
+            while (resultSet.next())
+                seqNum = resultSet.getInt("cid") + 1;
+        }
     }
 
     static PatientClass getById(int cid, MyConnection conn) {
@@ -46,6 +55,7 @@ public class PatientClass {
 
     static int insert(String name, MyConnection conn) {
         try {
+            setSeqNum(conn);
             String query = "INSERT INTO PatientClass values(?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);

@@ -31,7 +31,7 @@ public class PatientClassRelationship {
         try {
             String query = "select * from PatientClassRelationship where pid = " + pid;
             ResultSet rs = conn.stmt.executeQuery(query);
-            List ids = new ArrayList<Integer>();
+            List<Integer> ids = new ArrayList<Integer>();
             while (rs.next())
                 ids.add(rs.getInt("cid"));
             return ids;

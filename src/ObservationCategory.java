@@ -6,7 +6,7 @@ public class ObservationCategory {
     static int seqNum;
 
     static {
-        seqNum = 1;
+        seqNum = 0;
     }
 
     int ocid;
@@ -15,6 +15,15 @@ public class ObservationCategory {
     private ObservationCategory(int ocid, String name) {
         this.ocid = ocid;
         this.name = name;
+    }
+
+    private static void setSeqNum(MyConnection connection) throws SQLException {
+        if(seqNum == 0) {
+            String query = "SELECT MAX(ocid) as ocid from ObservationCategory";
+            ResultSet resultSet = connection.stmt.executeQuery(query);
+            while (resultSet.next())
+                seqNum = resultSet.getInt("ocid") + 1;
+        }
     }
 
     static ObservationCategory getById(int ocid, MyConnection conn) {
@@ -80,6 +89,7 @@ public class ObservationCategory {
 
     static int insert(String name, MyConnection conn) {
         try {
+            setSeqNum(conn);
             String query = "INSERT INTO ObservationCategory values(?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);

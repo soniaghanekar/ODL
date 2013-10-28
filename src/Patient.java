@@ -5,7 +5,7 @@ public class Patient {
     static int seqNum;
 
     static {
-        seqNum = 1;
+        seqNum = 0;
     }
 
     int pid;
@@ -25,6 +25,15 @@ public class Patient {
         this.publicStatus = publicStatus;
         this.password = password;
     }
+    private static void setSeqNum(MyConnection connection) throws SQLException {
+        if(seqNum == 0) {
+            String query = "SELECT MAX(pid) as pid from Patient";
+            ResultSet resultSet = connection.stmt.executeQuery(query);
+            while (resultSet.next())
+                seqNum = resultSet.getInt("pid") + 1;
+        }
+    }
+
 
     static Patient getById(int pid, MyConnection conn) {
         try {
@@ -43,6 +52,7 @@ public class Patient {
     static int insert(Date dob, String name, String address, String sex, String publicStatus, String password, MyConnection conn) {
         java.sql.Date longDOB = new java.sql.Date(dob.getTime());
         try {
+            setSeqNum(conn);
             String query = "INSERT INTO patient values(?,?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);
