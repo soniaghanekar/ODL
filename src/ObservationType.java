@@ -65,7 +65,7 @@ public class ObservationType {
 
     private static void setSeqNum(MyConnection connection) throws SQLException {
         if(seqNum == 0) {
-            String query = "SELECT MAX(otid) as otid from ObservationType";
+            String query = "SELECT COALESCE(MAX(otid), 0) as otid from ObservationType";
             ResultSet resultSet = connection.stmt.executeQuery(query);
             while (resultSet.next())
                 seqNum = resultSet.getInt("otid") + 1;

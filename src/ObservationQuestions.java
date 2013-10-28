@@ -23,7 +23,7 @@ public class ObservationQuestions {
 
     private static void setSeqNum(MyConnection connection) throws SQLException {
         if(seqNum == 0) {
-            String query = "SELECT MAX(qid) as qid from observationquestions";
+            String query = "SELECT COALESCE(MAX(qid), 0) as qid from observationquestions";
             ResultSet resultSet = connection.stmt.executeQuery(query);
             while (resultSet.next())
                 seqNum = resultSet.getInt("qid") + 1;

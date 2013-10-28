@@ -27,7 +27,7 @@ public class Patient {
     }
     private static void setSeqNum(MyConnection connection) throws SQLException {
         if(seqNum == 0) {
-            String query = "SELECT MAX(pid) as pid from Patient";
+            String query = "SELECT COALESCE(MAX(pid), 0) as pid from Patient";
             ResultSet resultSet = connection.stmt.executeQuery(query);
             while (resultSet.next())
                 seqNum = resultSet.getInt("pid") + 1;

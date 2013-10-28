@@ -19,7 +19,7 @@ public class ObservationCategory {
 
     private static void setSeqNum(MyConnection connection) throws SQLException {
         if(seqNum == 0) {
-            String query = "SELECT MAX(ocid) as ocid from ObservationCategory";
+            String query = "SELECT COALESCE(MAX(ocid), 0) as ocid from ObservationCategory";
             ResultSet resultSet = connection.stmt.executeQuery(query);
             while (resultSet.next())
                 seqNum = resultSet.getInt("ocid") + 1;
