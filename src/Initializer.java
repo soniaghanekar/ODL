@@ -135,6 +135,15 @@ public class Initializer {
                 "(cid INTEGER REFERENCES PatientClass(cid), otid INTEGER REFERENCES ObservationType(otid), " +
                 "PRIMARY KEY (cid, otid))");
 
+        myConn.stmt.executeUpdate("CREATE TABLE Alert " +
+                "(pid INTEGER REFERENCES Patient(pid), text VARCHAR2(100), viewed CHAR(1), timestamp TIMESTAMP(2), " +
+                "PRIMARY KEY (pid, text), CONSTRAINT viewed_values CHECK (viewed IN ('1', '0')))");
+
+        myConn.stmt.executeUpdate("CREATE TABLE ObservationThreshold " +
+                "(qid INTEGER REFERENCES ObservationQuestions(qid) PRIMARY KEY, minValue VARCHAR2(20), maxValue VARCHAR2(20))");
+
+
+
     }
 
     static void close(ResultSet rs) {
