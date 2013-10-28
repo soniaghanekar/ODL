@@ -147,7 +147,7 @@ public class ODL {
     private static void enterNewObservationType() {
         System.out.println("Enter the observation type name :");
         String name = input.nextLine();
-        ObservationType.insertGeneralObservationType(name, myConn);
+        ObservationType.insertForCategory(name, "General", myConn);
         while(true) {
             System.out.println("Enter additional information question for the new type:");
             String question = input.nextLine();

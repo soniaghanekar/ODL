@@ -58,18 +58,18 @@ public class Initializer {
     }
 
     private static void insertObservationTypes(MyConnection myConn) {
-        ObservationType.insertBehavioralObservationType("Diet", myConn);
-        ObservationType.insertBehavioralObservationType("Weight", myConn);
-        ObservationType.insertBehavioralObservationType("Exercise", myConn);
+        ObservationType.insertForCategory("Diet", "Behavioral", myConn);
+        ObservationType.insertForCategory("Weight", "Behavioral", myConn);
+        ObservationType.insertForCategory("Exercise", "Behavioral", myConn);
 
-        ObservationType.insertPhysiologicalObservationType("Blood Pressure", myConn);
-        ObservationType.insertPhysiologicalObservationType("Exercise Tolerance", myConn);
-        ObservationType.insertPhysiologicalObservationType("Oxygen Saturation", myConn);
-        ObservationType.insertPhysiologicalObservationType("Pain", myConn);
+        ObservationType.insertForCategory("Blood Pressure", "Physiological", myConn);
+        ObservationType.insertForCategory("Exercise Tolerance", "Physiological", myConn);
+        ObservationType.insertForCategory("Oxygen Saturation", "Physiological", myConn);
+        ObservationType.insertForCategory("Pain", "Physiological", myConn);
 
-        ObservationType.insertPsychologicalObservationType("Mood", myConn);
-        ObservationType.insertPhysiologicalObservationType("Contraction", myConn);
-        ObservationType.insertPhysiologicalObservationType("Temperature", myConn);
+        ObservationType.insertForCategory("Mood", "Psychological", myConn);
+        ObservationType.insertForCategory("Contraction", "Psychological", myConn);
+        ObservationType.insertForCategory("Temperature", "Psychological", myConn);
     }
 
     private static void insertQuestions(MyConnection myConn) {

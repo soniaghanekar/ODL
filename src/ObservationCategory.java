@@ -39,46 +39,10 @@ public class ObservationCategory {
         return null;
     }
 
-    static int getBehavioralCategoryId(MyConnection conn) {
+    static int getCategoryIdByName(String name, MyConnection connection) {
         try {
-            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Behavioral'";
-            ResultSet rs = conn.stmt.executeQuery(query);
-            while (rs.next())
-                return rs.getInt("ocid");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    static int getPhysiologicalCategoryId(MyConnection conn) {
-        try {
-            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Physiological'";
-            ResultSet rs = conn.stmt.executeQuery(query);
-            while (rs.next())
-                return rs.getInt("ocid");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    static int getPsychologicalCategoryId(MyConnection conn) {
-        try {
-            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'Psychological'";
-            ResultSet rs = conn.stmt.executeQuery(query);
-            while (rs.next())
-                return rs.getInt("ocid");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
-
-    static int getGeneralCategoryId(MyConnection conn) {
-        try {
-            String query = "SELECT ocid FROM ObservationCategory WHERE name = 'General'";
-            ResultSet rs = conn.stmt.executeQuery(query);
+            String query = "SELECT ocid FROM ObservationCategory WHERE name = '" + name + "'";
+            ResultSet rs = connection.stmt.executeQuery(query);
             while (rs.next())
                 return rs.getInt("ocid");
         } catch (SQLException e) {

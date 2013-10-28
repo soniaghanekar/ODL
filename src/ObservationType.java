@@ -72,27 +72,11 @@ public class ObservationType {
         }
     }
 
-    static void insertBehavioralObservationType(String name, MyConnection conn) {
-        int ocid = ObservationCategory.getBehavioralCategoryId(conn);
+    static void insertForCategory(String obsName, String catName, MyConnection connection) {
+        int ocid = ObservationCategory.getCategoryIdByName(catName, connection);
         if (ocid != 0)
-            insert(name, ocid, conn);
-    }
-
-    static void insertPhysiologicalObservationType(String name, MyConnection conn) {
-        int ocid = ObservationCategory.getPhysiologicalCategoryId(conn);
-        if (ocid != 0)
-            insert(name, ocid, conn);
-    }
-
-    static void insertPsychologicalObservationType(String name, MyConnection conn) {
-        int ocid = ObservationCategory.getPsychologicalCategoryId(conn);
-        if (ocid != 0)
-            insert(name, ocid, conn);
-    }
-
-    static void insertGeneralObservationType(String name, MyConnection conn) {
-        int ocid = ObservationCategory.getGeneralCategoryId(conn);
-        if (ocid != 0)
-            insert(name, ocid, conn);
+            insert(obsName, ocid, connection);
+        else
+            System.out.println("Could not get " + catName + " category");
     }
 }
