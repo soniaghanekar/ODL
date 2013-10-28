@@ -4,7 +4,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObservationQuestions {
+public class ObservationQuestion {
     static int seqNum;
 
     static {
@@ -15,7 +15,7 @@ public class ObservationQuestions {
     String text;
     int otid;
 
-    private ObservationQuestions(int qid, String text, int otid) {
+    private ObservationQuestion(int qid, String text, int otid) {
         this.qid = qid;
         this.text = text;
         this.otid = otid;
@@ -23,19 +23,19 @@ public class ObservationQuestions {
 
     private static void setSeqNum(MyConnection connection) throws SQLException {
         if(seqNum == 0) {
-            String query = "SELECT COALESCE(MAX(qid), 0) as qid from observationquestions";
+            String query = "SELECT COALESCE(MAX(qid), 0) as qid from ObservationQuestion";
             ResultSet resultSet = connection.stmt.executeQuery(query);
             while (resultSet.next())
                 seqNum = resultSet.getInt("qid") + 1;
         }
     }
 
-    static ObservationQuestions getById(int qid, MyConnection conn) {
+    static ObservationQuestion getById(int qid, MyConnection conn) {
         try {
-            String query = "select * from ObservationQuestions where qid = " + qid;
+            String query = "select * from ObservationQuestion where qid = " + qid;
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next())
-                return new ObservationQuestions(rs.getInt("otid"), rs.getString("text"), rs.getInt("otid"));
+                return new ObservationQuestion(rs.getInt("otid"), rs.getString("text"), rs.getInt("otid"));
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -43,13 +43,13 @@ public class ObservationQuestions {
         return null;
     }
 
-    static List<ObservationQuestions> getByObservationType(int otid, MyConnection conn) {
+    static List<ObservationQuestion> getByObservationType(int otid, MyConnection conn) {
         try {
-            String query = "select * from ObservationQuestions where otid = " + otid;
+            String query = "select * from ObservationQuestion where otid = " + otid;
             ResultSet rs = conn.stmt.executeQuery(query);
-            ArrayList<ObservationQuestions> questions = new ArrayList<ObservationQuestions>();
+            ArrayList<ObservationQuestion> questions = new ArrayList<ObservationQuestion>();
             while (rs.next())
-                questions.add(new ObservationQuestions(rs.getInt("qid"), rs.getString("text"), rs.getInt("otid")));
+                questions.add(new ObservationQuestion(rs.getInt("qid"), rs.getString("text"), rs.getInt("otid")));
             return questions;
 
         } catch (SQLException e) {
@@ -61,7 +61,7 @@ public class ObservationQuestions {
     static int insert(String text, int otid, MyConnection conn) {
         try {
             setSeqNum(conn);
-            String query = "INSERT INTO ObservationQuestions values(?,?,?)";
+            String query = "INSERT INTO ObservationQuestion values(?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);
             pstmt.setString(2, text);

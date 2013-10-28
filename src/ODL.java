@@ -151,7 +151,7 @@ public class ODL {
         while(true) {
             System.out.println("Enter additional information question for the new type:");
             String question = input.nextLine();
-            ObservationQuestions.insertByTypeName(name, question, myConn);
+            ObservationQuestion.insertByTypeName(name, question, myConn);
             System.out.println("Would you like to get any more additional information? (y/n)");
             char choice = input.nextLine().toLowerCase().charAt(0);
 
@@ -170,8 +170,8 @@ public class ODL {
         int typeNo = Integer.parseInt(input.nextLine());
         try {
             int otid = availableTypes.get(typeNo - 1);
-            List<ObservationQuestions> questions = ObservationQuestions.getByObservationType(otid, myConn);
-            for (ObservationQuestions question : questions) {
+            List<ObservationQuestion> questions = ObservationQuestion.getByObservationType(otid, myConn);
+            for (ObservationQuestion question : questions) {
                 System.out.println(question.text);
                 String answer = input.nextLine();
                 Date obsDate = getObservationDate();

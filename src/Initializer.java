@@ -73,19 +73,19 @@ public class Initializer {
     }
 
     private static void insertQuestions(MyConnection myConn) {
-        ObservationQuestions.insertByTypeName("Diet", "What was consumed?", myConn);
-        ObservationQuestions.insertByTypeName("Diet", "How much was consumed?", myConn);
-        ObservationQuestions.insertByTypeName("Weight", "How much was your weight?", myConn);
-        ObservationQuestions.insertByTypeName("Exercise", "What kind of exercise was done?", myConn);
-        ObservationQuestions.insertByTypeName("Exercise", "For how much time?", myConn);
-        ObservationQuestions.insertByTypeName("Blood Pressure", "How much was the Systolic pressure?", myConn);
-        ObservationQuestions.insertByTypeName("Blood Pressure", "How much was the Diastolic pressure?", myConn);
-        ObservationQuestions.insertByTypeName("Exercise Tolerance", "Enter the number of steps before exhaustion", myConn);
-        ObservationQuestions.insertByTypeName("Oxygen Saturation", "Enter the oxygen saturation amount", myConn);
-        ObservationQuestions.insertByTypeName("Pain", "Enter the pain levels: Scale[1-10] ", myConn);
-        ObservationQuestions.insertByTypeName("Mood", "Enter mood from one amongst these: {Happy, Sad, Neutral}", myConn);
-        ObservationQuestions.insertByTypeName("Contraction", "Enter frequency (Number of times every half an hour)", myConn);
-        ObservationQuestions.insertByTypeName("Temperature", "Enter your temperature", myConn);
+        ObservationQuestion.insertByTypeName("Diet", "What was consumed?", myConn);
+        ObservationQuestion.insertByTypeName("Diet", "How much was consumed?", myConn);
+        ObservationQuestion.insertByTypeName("Weight", "How much was your weight?", myConn);
+        ObservationQuestion.insertByTypeName("Exercise", "What kind of exercise was done?", myConn);
+        ObservationQuestion.insertByTypeName("Exercise", "For how much time?", myConn);
+        ObservationQuestion.insertByTypeName("Blood Pressure", "How much was the Systolic pressure?", myConn);
+        ObservationQuestion.insertByTypeName("Blood Pressure", "How much was the Diastolic pressure?", myConn);
+        ObservationQuestion.insertByTypeName("Exercise Tolerance", "Enter the number of steps before exhaustion", myConn);
+        ObservationQuestion.insertByTypeName("Oxygen Saturation", "Enter the oxygen saturation amount", myConn);
+        ObservationQuestion.insertByTypeName("Pain", "Enter the pain levels: Scale[1-10] ", myConn);
+        ObservationQuestion.insertByTypeName("Mood", "Enter mood from one amongst these: {Happy, Sad, Neutral}", myConn);
+        ObservationQuestion.insertByTypeName("Contraction", "Enter frequency (Number of times every half an hour)", myConn);
+        ObservationQuestion.insertByTypeName("Temperature", "Enter your temperature", myConn);
     }
 
     private static void insertClassObvTypeData(MyConnection myConn) {
@@ -122,13 +122,13 @@ public class Initializer {
         myConn.stmt.executeUpdate("CREATE TABLE ObservationType " +
                 "(otid INTEGER PRIMARY KEY, name VARCHAR2(25), ocid INTEGER REFERENCES ObservationCategory(ocid))");
 
-        myConn.stmt.executeUpdate("CREATE TABLE ObservationQuestions " +
+        myConn.stmt.executeUpdate("CREATE TABLE ObservationQuestion " +
                 "(qid INTEGER PRIMARY KEY, text VARCHAR2(100), otid INTEGER REFERENCES ObservationType(otid))");
 
         myConn.stmt.executeUpdate("CREATE TABLE Observation " +
                 "(pid INTEGER REFERENCES Patient(pid), otid INTEGER REFERENCES ObservationType(otid), " +
                 "obvTimestamp TIMESTAMP(2), recTimestamp TIMESTAMP(2), " +
-                "qid INTEGER REFERENCES ObservationQuestions(qid), answer VARCHAR2(20), " +
+                "qid INTEGER REFERENCES ObservationQuestion(qid), answer VARCHAR2(20), " +
                 "PRIMARY KEY (pid, otid, qid, obvTimestamp) )");
 
         myConn.stmt.executeUpdate("CREATE TABLE PatientClassObvTypeMapper " +
@@ -140,7 +140,7 @@ public class Initializer {
                 "PRIMARY KEY (pid, text), CONSTRAINT viewed_values CHECK (viewed IN ('1', '0')))");
 
         myConn.stmt.executeUpdate("CREATE TABLE ObservationThreshold " +
-                "(qid INTEGER REFERENCES ObservationQuestions(qid) PRIMARY KEY, minValue VARCHAR2(20), maxValue VARCHAR2(20))");
+                "(qid INTEGER REFERENCES ObservationQuestion(qid) PRIMARY KEY, minValue VARCHAR2(20), maxValue VARCHAR2(20))");
 
 
 
