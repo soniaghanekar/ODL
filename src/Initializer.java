@@ -147,11 +147,10 @@ public class Initializer {
     }
 
     static void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (Throwable whatever) {
-            }
+        if (rs != null) try {
+            rs.close();
+        } catch (Throwable whatever) {
+            whatever.printStackTrace();
         }
     }
 }
