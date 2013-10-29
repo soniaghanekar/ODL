@@ -68,5 +68,9 @@ public class Alert {
         conn.stmt.executeUpdate(query);
     }
 
+    static void deleteViewedAlerts(int pid, MyConnection conn) throws SQLException {
+        String query = "delete from alert where pid = " + pid + " AND viewed = '1'";
+        conn.stmt.executeQuery(query);
+    }
 
 }
