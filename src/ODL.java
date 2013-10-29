@@ -73,7 +73,8 @@ public class ODL {
             while (!logout) {
                 System.out.println("1. Enter Data");
                 System.out.println("2. View Data");
-                System.out.println("3. Logout");
+                System.out.println("3. Clear Alerts");
+                System.out.println("4. Logout");
                 choice = input.nextLine().charAt(0);
 
                 switch (choice) {
@@ -85,6 +86,9 @@ public class ODL {
                         viewData(pid);
                         break;
                     case '3':
+                        deleteAlerts(pid);
+                        break;
+                    case '4':
                         logout = true;
                         System.out.println("You have been successfully logged out");
                         break;
@@ -96,6 +100,15 @@ public class ODL {
             }
         } else
             System.out.println("Invalid Patient Id/Password pair. Please make sure you enter correct credentials");
+    }
+
+    private static void deleteAlerts(int pid) {
+        try {
+            Alert.deleteViewedAlerts(pid, myConn);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("Unable to delete all alerts due to system failure. Please try again later");
+        }
     }
 
     private static void viewData(int patientId) {
