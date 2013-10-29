@@ -23,13 +23,13 @@ public class MyConnection {
 
     public void closeConnection() {
         if(conn != null) {
-            try { conn.close(); } catch(Throwable whatever) {}
+            try { conn.close(); } catch(Throwable ignored) {}
         }
     }
 
     public void closeStatement() {
         if(stmt != null) {
-            try { stmt.close(); } catch(Throwable whatever) {}
+            try { stmt.close(); } catch(Throwable ignored) {}
         }
     }
 

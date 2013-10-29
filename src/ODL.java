@@ -1,4 +1,5 @@
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -110,11 +111,26 @@ public class ODL {
                 case '1':
                     viewObservations(patientId);
                     break;
+                case '2':
+                    viewAlerts(patientId);
+                    break;
                 case '3':
                     shouldContinue = false;
                     break;
                 default:
                     System.out.println("Please Select An Option From The Allowed Values");
+            }
+        }
+    }
+
+    private static void viewAlerts(int patientId) {
+        List<Alert> alertList = Alert.getByPId(patientId, myConn);
+        for(Alert alert: alertList){
+            System.out.println(alert.text + " " + alert.timestamp);
+            try {
+                alert.markViewed(myConn);
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }

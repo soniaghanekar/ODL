@@ -49,7 +49,7 @@ public class PatientClassRelationship {
             pstmt.setInt(2, cid);
             int ret = pstmt.executeUpdate();
 
-            if(ret != 0)
+            if (ret != 0)
                 return pid;
 
         } catch (SQLException e) {
@@ -60,7 +60,7 @@ public class PatientClassRelationship {
 
     public static int insertAsGeneral(int patientId, MyConnection conn) {
         int cid = PatientClass.getIdForGeneralClass(conn);
-        if(cid != 0) {
+        if (cid != 0) {
             insert(patientId, cid, conn);
             return patientId;
         }
