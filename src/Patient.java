@@ -1,5 +1,7 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Patient {
     static int seqNum;
@@ -25,6 +27,7 @@ public class Patient {
         this.publicStatus = publicStatus;
         this.password = password;
     }
+
     private static void setSeqNum(MyConnection connection) throws SQLException {
         if(seqNum == 0) {
             String query = "SELECT COALESCE(MAX(pid), 0) as pid from Patient";
@@ -71,6 +74,17 @@ public class Patient {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    List<Integer> findProspectiveFriends(MyConnection conn) throws SQLException {
+        List<Integer> prospectiveFriends = new ArrayList<Integer>();
+        String query = "select pid from patient p, PatientClassRelationship pc where p.pid <> " + this.pid + " AND p.publicStatus = 'y' " +
+                "AND (select DISTINCT pid from PatientClassRelationship where cid in " +
+                "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + "))";
+        ResultSet resultSet = conn.stmt.executeQuery(query);
+        while(resultSet.next())
+            prospectiveFriends.add(resultSet.getInt(1));
+        return prospectiveFriends;
     }
 
 }
