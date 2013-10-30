@@ -19,7 +19,7 @@ public class ObservationType {
         this.ocid = ocid;
     }
 
-    static ObservationType getById(int otid, MyConnection conn) {
+    static ObservationType getById(int otid, MyConnection conn) throws MyException {
         try {
             String query = "select * from ObservationType where otid = " + otid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -27,24 +27,24 @@ public class ObservationType {
                 return new ObservationType(rs.getInt("otid"), rs.getString("name"), rs.getInt("ocid"));
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get observation type for otid = " + otid);
         }
         return null;
     }
 
-    static int getIdFromName(String name, MyConnection conn) {
+    static int getIdFromName(String name, MyConnection conn) throws MyException {
         try {
             String query = "select otid from ObservationType where name = '" + name + "'";
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next())
                 return rs.getInt("otid");
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get observation type with name " + name);
         }
         return 0;
     }
 
-    static int insert(String name, int ocid, MyConnection conn) {
+    static int insert(String name, int ocid, MyConnection conn) throws MyException {
         try {
             setSeqNum(conn);
             String query = "INSERT INTO ObservationType values(?,?,?)";
@@ -58,7 +58,7 @@ public class ObservationType {
                 return seqNum++;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion for observation type with name " + name + " failed");
         }
         return 0;
     }
@@ -72,11 +72,9 @@ public class ObservationType {
         }
     }
 
-    static void insertForCategory(String obsName, String catName, MyConnection connection) {
+    static void insertForCategory(String obsName, String catName, MyConnection connection) throws MyException {
         int ocid = ObservationCategory.getCategoryIdByName(catName, connection);
         if (ocid != 0)
             insert(obsName, ocid, connection);
-        else
-            System.out.println("Could not get " + catName + " category");
     }
 }

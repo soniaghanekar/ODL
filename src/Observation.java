@@ -21,7 +21,7 @@ public class Observation {
         this.answer = answer;
     }
 
-    static Observation getById(int pid, int otid, int qid, Date obvTimestamp, MyConnection conn) {
+    static Observation getById(int pid, int otid, int qid, Date obvTimestamp, MyConnection conn) throws MyException {
         Timestamp obvTime = new Timestamp(obvTimestamp.getTime());
 
         try {
@@ -38,12 +38,13 @@ public class Observation {
                         rs.getTimestamp("recTimestamp"), rs.getInt("qid"), rs.getString("answer"));
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get observation for pid = " + pid + " otid = " +
+                    otid + " qid = " + qid + " obsTimestamp = " + obvTimestamp);
         }
         return null;
     }
 
-    static int insert(int pid, int otid, Date obvTimestamp, Date recTimestamp, int qid, String answer, MyConnection conn) {
+    static int insert(int pid, int otid, Date obvTimestamp, Date recTimestamp, int qid, String answer, MyConnection conn) throws MyException {
         Timestamp obvTime = new Timestamp(obvTimestamp.getTime());
         Timestamp recTime = new Timestamp(recTimestamp.getTime());
 
@@ -62,12 +63,12 @@ public class Observation {
                 return pid;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion of observation failed for pid = " + pid);
         }
         return 0;
     }
 
-    static List<Observation> filter(int pid, int otid, Date beginDate, Date endDate, MyConnection conn) {
+    static List<Observation> filter(int pid, int otid, Date beginDate, Date endDate, MyConnection conn) throws MyException {
         List<Observation> observations = new ArrayList<Observation>();
         Timestamp beginTimestamp = new Timestamp(beginDate.getTime());
         Timestamp endTimestamp = new Timestamp(endDate.getTime());
@@ -86,9 +87,8 @@ public class Observation {
             return observations;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Filtering of observation failed for pid = " + pid);
         }
-        return null;
     }
 
 }

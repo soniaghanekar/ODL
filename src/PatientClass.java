@@ -27,7 +27,7 @@ public class PatientClass {
         }
     }
 
-    static PatientClass getById(int cid, MyConnection conn) {
+    static PatientClass getById(int cid, MyConnection conn) throws MyException {
         try {
             String query = "select * from PatientClass where cid = " + cid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -35,12 +35,12 @@ public class PatientClass {
                 return new PatientClass(rs.getInt("cid"), rs.getString("name"));
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get patient class  " + cid);
         }
         return null;
     }
 
-    static int getIdByName(String name, MyConnection conn) {
+    static int getIdByName(String name, MyConnection conn) throws MyException {
         try {
             String query = "select cid from PatientClass where name = '" + name + "'";
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -48,12 +48,12 @@ public class PatientClass {
                 return rs.getInt("cid");
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get patient class with name " + name);
         }
         return 0;
     }
 
-    static int insert(String name, MyConnection conn) {
+    static int insert(String name, MyConnection conn) throws MyException {
         try {
             setSeqNum(conn);
             String query = "INSERT INTO PatientClass values(?,?)";
@@ -66,20 +66,9 @@ public class PatientClass {
                 return seqNum++;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion of patient class with name " + name + " failed");
         }
         return 0;
     }
 
-    static int getIdForGeneralClass(MyConnection conn) {
-        try {
-            String query = "SELECT cid from PatientClass WHERE name = 'General'";
-            ResultSet rs = conn.stmt.executeQuery(query);
-            while (rs.next())
-                return rs.getInt("cid");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
-    }
 }

@@ -38,7 +38,7 @@ public class Patient {
     }
 
 
-    static Patient getById(int pid, MyConnection conn) {
+    static Patient getById(int pid, MyConnection conn) throws MyException {
         try {
             String query = "select * from patient where pid = " + pid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -47,12 +47,13 @@ public class Patient {
                         rs.getString("sex"), rs.getString("publicStatus"), rs.getString("password"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get patient with id " + pid);
         }
         return null;
     }
 
-    static int insert(Date dob, String name, String address, String sex, String publicStatus, String password, MyConnection conn) {
+    static int insert(Date dob, String name, String address, String sex, String publicStatus, String password, MyConnection conn)
+            throws MyException {
         java.sql.Date longDOB = new java.sql.Date(dob.getTime());
         try {
             setSeqNum(conn);
@@ -71,20 +72,28 @@ public class Patient {
                 return seqNum++;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion of patient with name " + name + "failed");
         }
         return 0;
     }
 
-    List<Integer> findProspectiveFriends(MyConnection conn) throws SQLException {
-        List<Integer> prospectiveFriends = new ArrayList<Integer>();
-        String query = "select pid from patient p, PatientClassRelationship pc where p.pid <> " + this.pid + " AND p.publicStatus = 'y' " +
-                "AND (select DISTINCT pid from PatientClassRelationship where cid in " +
-                "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + "))";
-        ResultSet resultSet = conn.stmt.executeQuery(query);
-        while(resultSet.next())
-            prospectiveFriends.add(resultSet.getInt(1));
-        return prospectiveFriends;
+    List<Integer> findProspectiveFriends(MyConnection conn) throws MyException {
+        try {
+            List<Integer> prospectiveFriends = new ArrayList<Integer>();
+            String query = "select pid from patient p, PatientClassRelationship pc where p.pid <> " + this.pid + " AND p.publicStatus = 'y' " +
+                    "AND (select DISTINCT pid from PatientClassRelationship where cid in " +
+                    "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + "))";
+            ResultSet resultSet = null;
+
+            resultSet = conn.stmt.executeQuery(query);
+
+            while(resultSet.next())
+                prospectiveFriends.add(resultSet.getInt(1));
+            return prospectiveFriends;
+
+        } catch (SQLException e) {
+            throw new MyException("Could not find friends for name " + name);
+        }
     }
 
 }

@@ -14,7 +14,7 @@ public class PatientClassObservationTypeMapper {
         this.otid = otid;
     }
 
-    static List<Integer> getByClass(int cid, MyConnection conn) {
+    static List<Integer> getByClass(int cid, MyConnection conn) throws MyException {
         try {
             String query = "select * from PatientClassObvTypeMapper where cid = " + cid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -24,12 +24,11 @@ public class PatientClassObservationTypeMapper {
             return typeIds;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get observation types for patient class id  " + cid);
         }
-        return null;
     }
 
-    static int insert(int cid, int otid, MyConnection conn) {
+    static int insert(int cid, int otid, MyConnection conn) throws MyException {
         try {
             String query = "INSERT INTO PatientClassObvTypeMapper values(?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
@@ -41,12 +40,12 @@ public class PatientClassObservationTypeMapper {
                 return cid;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion for mapping of patient class and observation type failed for class id " + cid);
         }
         return 0;
     }
 
-    static int insertByClassNameAndTypeName(String cname, String tname, MyConnection conn) {
+    static int insertByClassNameAndTypeName(String cname, String tname, MyConnection conn) throws MyException {
         int cid = PatientClass.getIdByName(cname, conn);
         int otid = ObservationType.getIdFromName(tname, conn);
         if(insert(cid, otid, conn) != 0)

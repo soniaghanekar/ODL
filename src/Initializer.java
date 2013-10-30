@@ -38,11 +38,13 @@ public class Initializer {
                 }
             }
         } catch (Throwable oops) {
+            if (oops instanceof MyException)
+                System.out.println(((MyException) oops).message);
             oops.printStackTrace();
         }
     }
 
-    private static void insertData(MyConnection myConn) {
+    private static void insertData(MyConnection myConn) throws MyException {
         insertPatientClasses(myConn);
         insertObservationCategories(myConn);
         insertObservationTypes(myConn);
@@ -50,14 +52,14 @@ public class Initializer {
         insertClassObvTypeData(myConn);
     }
 
-    private static void insertObservationCategories(MyConnection myConn) {
+    private static void insertObservationCategories(MyConnection myConn) throws MyException {
         ObservationCategory.insert("Behavioral", myConn);
         ObservationCategory.insert("Physiological", myConn);
         ObservationCategory.insert("Psychological", myConn);
         ObservationCategory.insert("General", myConn);
     }
 
-    private static void insertObservationTypes(MyConnection myConn) {
+    private static void insertObservationTypes(MyConnection myConn) throws MyException {
         ObservationType.insertForCategory("Diet", "Behavioral", myConn);
         ObservationType.insertForCategory("Weight", "Behavioral", myConn);
         ObservationType.insertForCategory("Exercise", "Behavioral", myConn);
@@ -72,7 +74,7 @@ public class Initializer {
         ObservationType.insertForCategory("Temperature", "Psychological", myConn);
     }
 
-    private static void insertQuestions(MyConnection myConn) {
+    private static void insertQuestions(MyConnection myConn) throws MyException {
         ObservationQuestion.insertByTypeName("Diet", "What was consumed?", myConn);
         ObservationQuestion.insertByTypeName("Diet", "How much was consumed?", myConn);
         ObservationQuestion.insertByTypeName("Weight", "How much was your weight?", myConn);
@@ -88,14 +90,14 @@ public class Initializer {
         ObservationQuestion.insertByTypeName("Temperature", "Enter your temperature", myConn);
     }
 
-    private static void insertClassObvTypeData(MyConnection myConn) {
+    private static void insertClassObvTypeData(MyConnection myConn) throws MyException {
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Diet", myConn);
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Weight", myConn);
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Exercise", myConn);
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Mood", myConn);
     }
 
-    private static void insertPatientClasses(MyConnection myConn) {
+    private static void insertPatientClasses(MyConnection myConn) throws MyException {
          PatientClass.insert("HIV", myConn);
          PatientClass.insert("Obesity", myConn);
          PatientClass.insert("High Risk Pregnancy", myConn);

@@ -20,7 +20,7 @@ public class Alert {
         this.timestamp = timestamp;
     }
 
-    static Alert getById(int pid, String text, MyConnection conn) {
+    static Alert getById(int pid, String text, MyConnection conn) throws MyException {
         try {
             String query = "select * from alert where pid = " + pid + " AND text = " + text;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -28,12 +28,12 @@ public class Alert {
                 return new Alert(rs.getInt("pid"), rs.getString("text"), rs.getString("viewed"), rs.getDate("timestamp"));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get alert for pid = " + pid + " and text = " + text);
         }
         return null;
     }
 
-    static List<Alert> getByPId(int pid, MyConnection conn) {
+    static List<Alert> getByPId(int pid, MyConnection conn) throws MyException {
         List<Alert> alertList = new ArrayList<Alert>();
         try {
             String query = "select * from alert where pid = " + pid;
@@ -42,12 +42,12 @@ public class Alert {
                 alertList.add(new Alert(rs.getInt("pid"), rs.getString("text"), rs.getString("viewed"), rs.getDate("timestamp")));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get alert for pid = " + pid);
         }
         return alertList;
     }
 
-    static void insert(int pid, String text, String viewed, Date timestamp, MyConnection conn) {
+    static void insert(int pid, String text, String viewed, Date timestamp, MyConnection conn) throws MyException {
         Timestamp longTimestamp = new Timestamp(timestamp.getTime());
         try {
             String query = "INSERT INTO alert values(?,?,?,?)";
@@ -58,19 +58,27 @@ public class Alert {
             pstmt.setTimestamp(4, longTimestamp);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion into alerts failed for pid " + pid);
         }
     }
 
-    void markViewed(MyConnection conn) throws SQLException {
+    void markViewed(MyConnection conn) throws MyException {
         this.viewed = "1";
         String query = "UPDATE alert SET viewed = '1' where pid = "+this.pid+" AND text = " + this.text;
-        conn.stmt.executeUpdate(query);
+        try {
+            conn.stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new MyException("Marking alert for pid = " + pid + " as viewed failed");
+        }
     }
 
-    static void deleteViewedAlerts(int pid, MyConnection conn) throws SQLException {
+    static void deleteViewedAlerts(int pid, MyConnection conn) throws MyException {
         String query = "delete from alert where pid = " + pid + " AND viewed = '1'";
-        conn.stmt.executeQuery(query);
+        try {
+            conn.stmt.executeQuery(query);
+        } catch (SQLException e) {
+            throw new MyException("Deletion of viewed alerts failed for pid = " + pid);
+        }
     }
 
 }

@@ -14,7 +14,7 @@ public class PatientClassRelationship {
         this.cid = cid;
     }
 
-    static PatientClassRelationship getById(int pid, int cid, MyConnection conn) {
+    static PatientClassRelationship getById(int pid, int cid, MyConnection conn) throws MyException {
         try {
             String query = "select * from PatientClassRelationship where pid = " + pid + " AND cid = " + cid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -22,12 +22,12 @@ public class PatientClassRelationship {
                 return new PatientClassRelationship(rs.getInt("pid"), rs.getInt("cid"));
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get class for patient with id = " + pid);
         }
         return null;
     }
 
-    static List<Integer> getClassesForPatient(int pid, MyConnection conn) {
+    static List<Integer> getClassesForPatient(int pid, MyConnection conn) throws MyException {
         try {
             String query = "select * from PatientClassRelationship where pid = " + pid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -36,12 +36,11 @@ public class PatientClassRelationship {
                 ids.add(rs.getInt("cid"));
             return ids;
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get classes for patient with id = " + pid);
         }
-        return null;
     }
 
-    static int insert(int pid, int cid, MyConnection conn) {
+    static int insert(int pid, int cid, MyConnection conn) throws MyException {
         try {
             String query = "INSERT INTO PatientClassRelationship values(?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
@@ -53,13 +52,13 @@ public class PatientClassRelationship {
                 return pid;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion of class for patient with id " + pid + " failed");
         }
         return 0;
     }
 
-    public static int insertAsGeneral(int patientId, MyConnection conn) {
-        int cid = PatientClass.getIdForGeneralClass(conn);
+    public static int insertAsGeneral(int patientId, MyConnection conn) throws MyException {
+        int cid = PatientClass.getIdByName("General", conn);
         if (cid != 0) {
             insert(patientId, cid, conn);
             return patientId;

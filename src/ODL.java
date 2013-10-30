@@ -1,5 +1,4 @@
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -54,11 +53,13 @@ public class ODL {
                 }
             }
         } catch (Throwable oops) {
+            if (oops instanceof MyException)
+                System.out.println(((MyException) oops).message);
             oops.printStackTrace();
         }
     }
 
-    private static void loginAsPatient() {
+    private static void loginAsPatient() throws MyException {
         System.out.println("Enter patient id: ");
         String patientId = input.nextLine();
         System.out.println("Enter password: ");
@@ -102,25 +103,20 @@ public class ODL {
             System.out.println("Invalid Patient Id/Password pair. Please make sure you enter correct credentials");
     }
 
-    private static void deleteAlerts(int pid) {
-        try {
-            Alert.deleteViewedAlerts(pid, myConn);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("Unable to delete all alerts due to system failure. Please try again later");
-        }
+    private static void deleteAlerts(int pid) throws MyException {
+        Alert.deleteViewedAlerts(pid, myConn);
     }
 
-    private static void viewData(int patientId) {
+    private static void viewData(int patientId) throws MyException {
         char choice;
         boolean shouldContinue = true;
-        while(shouldContinue) {
+        while (shouldContinue) {
             System.out.println("1. View Observations");
             System.out.println("2. View MyAlert");
             System.out.println("3. Go to patient login homepage");
             choice = input.nextLine().charAt(0);
 
-            switch(choice) {
+            switch (choice) {
                 case '1':
                     viewObservations(patientId);
                     break;
@@ -136,28 +132,22 @@ public class ODL {
         }
     }
 
-    private static void viewAlerts(int patientId) {
+    private static void viewAlerts(int patientId) throws MyException {
         List<Alert> alertList = Alert.getByPId(patientId, myConn);
-        for(Alert alert: alertList){
+        for (Alert alert : alertList)
             System.out.println(alert.text + " " + alert.timestamp);
-            try {
-                alert.markViewed(myConn);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    private static void enterData(int patientId) {
+    private static void enterData(int patientId) throws MyException {
         char choice;
         boolean shouldContinue = true;
-        while(shouldContinue) {
+        while (shouldContinue) {
             System.out.println("1. Enter new observation data");
             System.out.println("2. Add a new observation type");
             System.out.println("3. Go to patient login homepage");
             choice = input.nextLine().charAt(0);
 
-            switch(choice) {
+            switch (choice) {
                 case '1':
                     enterObservations(patientId);
                     break;
@@ -173,23 +163,23 @@ public class ODL {
         }
     }
 
-    private static void enterNewObservationType() {
+    private static void enterNewObservationType() throws MyException {
         System.out.println("Enter the observation type name :");
         String name = input.nextLine();
         ObservationType.insertForCategory(name, "General", myConn);
-        while(true) {
+        while (true) {
             System.out.println("Enter additional information question for the new type:");
             String question = input.nextLine();
             ObservationQuestion.insertByTypeName(name, question, myConn);
             System.out.println("Would you like to get any more additional information? (y/n)");
             char choice = input.nextLine().toLowerCase().charAt(0);
 
-            if(choice == 'n')
+            if (choice == 'n')
                 return;
         }
     }
 
-    private static void enterObservations(int patientId) {
+    private static void enterObservations(int patientId) throws MyException {
         List<Integer> availableTypes = getObservationTypesForPatient(patientId);
 
         System.out.println("Please enter the observation type no that you would like to enter: ");
@@ -197,23 +187,19 @@ public class ODL {
             System.out.println((i + 1) + ". " + ObservationType.getById(availableTypes.get(i), myConn).name);
 
         int typeNo = Integer.parseInt(input.nextLine());
-        try {
-            int otid = availableTypes.get(typeNo - 1);
-            List<ObservationQuestion> questions = ObservationQuestion.getByObservationType(otid, myConn);
-            for (ObservationQuestion question : questions) {
-                System.out.println(question.text);
-                String answer = input.nextLine();
-                Date obsDate = getObservationDate();
-                Date recordDate = new Date();
-                Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
-            }
-
-        } catch (Exception e) {
-            System.out.println("Invalid input.");
+        int otid = availableTypes.get(typeNo - 1);
+        List<ObservationQuestion> questions = ObservationQuestion.getByObservationType(otid, myConn);
+        for (ObservationQuestion question : questions) {
+            System.out.println(question.text);
+            String answer = input.nextLine();
+            Date obsDate = getObservationDate();
+            Date recordDate = new Date();
+            Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
         }
+
     }
 
-    private static void viewObservations(int patientId) {
+    private static void viewObservations(int patientId) throws MyException {
         List<Integer> availableTypes = getObservationTypesForPatient(patientId);
 
         System.out.println("Please select the observation type no: ");
@@ -229,17 +215,17 @@ public class ODL {
                     getDateFromString(beginDate + " 0:0:1", "MM/dd/yyyy HH:mm:ss"),
                     getDateFromString(endDate + " 23:59:59", "MM/dd/yyyy HH:mm:ss"), myConn);
             System.out.println("after filter");
-            for(Observation o: observations){
+            for (Observation o : observations) {
                 System.out.println(o.pid + " " + o.otid + " " + o.obvTimestamp + " " + o.recTimestamp + " " +
-                        o.qid +  " " + o.answer);
+                        o.qid + " " + o.answer);
             }
-        } catch (Exception e) {
+        } catch (ParseException e) {
             e.printStackTrace();
             System.out.println("Invalid input.");
         }
     }
 
-    private static List<Integer> getObservationTypesForPatient(int patientId) {
+    private static List<Integer> getObservationTypesForPatient(int patientId) throws MyException {
         Set<Integer> availableTypesSet = new HashSet<Integer>();
         List<Integer> cids = PatientClassRelationship.getClassesForPatient(patientId, myConn);
 
@@ -262,7 +248,7 @@ public class ODL {
 
     }
 
-    private static void registerPatient() throws ParseException {
+    private static void registerPatient() throws ParseException, MyException {
         System.out.println("Please enter patients name:");
         String name = input.nextLine();
         System.out.println("Please enter patients address:");
@@ -284,8 +270,6 @@ public class ODL {
                 System.out.println("Please remember this id as this will be used to login next time");
                 PatientClassRelationship.insertAsGeneral(patientId, myConn);
 
-            } else {
-                System.out.println("We were not able to create the patient. Please try again later");
             }
         }
     }

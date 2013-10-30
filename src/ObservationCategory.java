@@ -39,19 +39,19 @@ public class ObservationCategory {
         return null;
     }
 
-    static int getCategoryIdByName(String name, MyConnection connection) {
+    static int getCategoryIdByName(String name, MyConnection connection) throws MyException {
         try {
             String query = "SELECT ocid FROM ObservationCategory WHERE name = '" + name + "'";
             ResultSet rs = connection.stmt.executeQuery(query);
             while (rs.next())
                 return rs.getInt("ocid");
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get category for " + name);
         }
         return 0;
     }
 
-    static int insert(String name, MyConnection conn) {
+    static int insert(String name, MyConnection conn) throws MyException {
         try {
             setSeqNum(conn);
             String query = "INSERT INTO ObservationCategory values(?,?)";
@@ -64,7 +64,7 @@ public class ObservationCategory {
                 return seqNum++;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion of category failed for " + name);
         }
         return 0;
     }

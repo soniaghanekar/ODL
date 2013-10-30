@@ -30,7 +30,7 @@ public class ObservationQuestion {
         }
     }
 
-    static ObservationQuestion getById(int qid, MyConnection conn) {
+    static ObservationQuestion getById(int qid, MyConnection conn) throws MyException {
         try {
             String query = "select * from ObservationQuestion where qid = " + qid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -38,12 +38,12 @@ public class ObservationQuestion {
                 return new ObservationQuestion(rs.getInt("otid"), rs.getString("text"), rs.getInt("otid"));
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get observation question with qid = " + qid);
         }
         return null;
     }
 
-    static List<ObservationQuestion> getByObservationType(int otid, MyConnection conn) {
+    static List<ObservationQuestion> getByObservationType(int otid, MyConnection conn) throws MyException {
         try {
             String query = "select * from ObservationQuestion where otid = " + otid;
             ResultSet rs = conn.stmt.executeQuery(query);
@@ -53,12 +53,11 @@ public class ObservationQuestion {
             return questions;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Could not get questions for observation type " + otid);
         }
-        return null;
     }
 
-    static int insert(String text, int otid, MyConnection conn) {
+    static int insert(String text, int otid, MyConnection conn) throws MyException {
         try {
             setSeqNum(conn);
             String query = "INSERT INTO ObservationQuestion values(?,?,?)";
@@ -72,12 +71,12 @@ public class ObservationQuestion {
                 return seqNum++;
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new MyException("Insertion of question with text " + text + " failed");
         }
         return 0;
     }
 
-    static void insertByTypeName(String name, String text, MyConnection conn) {
+    static void insertByTypeName(String name, String text, MyConnection conn) throws MyException {
         int otid = ObservationType.getIdFromName(name, conn);
         if(otid != 0){
             insert(text, otid, conn);}
