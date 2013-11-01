@@ -133,7 +133,7 @@ public class ODL {
         Patient patient = Patient.getById(pid, myConn);
         List<Patient> prospectiveFriends = patient.findHealthFriends(myConn);
         for(int i = 1; i<= prospectiveFriends.size(); i++)
-            System.out.println(i + ". " + prospectiveFriends.get(i).name);
+            System.out.println(i + ". " + prospectiveFriends.get(i-1).name);
         int fid = Integer.parseInt(input.nextLine());
         HealthFriend.insert(pid, fid, myConn);
     }

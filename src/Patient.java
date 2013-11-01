@@ -80,8 +80,8 @@ public class Patient {
     public List<Patient> findHealthFriends(MyConnection conn) throws MyException {
         try {
             List<Patient> prospectiveFriends = new ArrayList<Patient>();
-            String query = "select pid, name from patient p, PatientClassRelationship pc where p.pid <> " + this.pid + " AND p.publicStatus = 'y' " +
-                    "AND (select DISTINCT pid from PatientClassRelationship where cid in " +
+            String query = "select DISTINCT p.pid, p.name from patient p, PatientClassRelationship pc where p.pid <> " + this.pid +
+                    " AND p.publicStatus = 'y' " + "AND p.pid in (select DISTINCT pid from PatientClassRelationship where cid in " +
                     "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + "))";
             ResultSet resultSet = null;
 
@@ -92,7 +92,8 @@ public class Patient {
             return prospectiveFriends;
 
         } catch (SQLException e) {
-            throw new MyException("Could not find friends for name " + name);
+            e.printStackTrace();
+            throw new MyException("Could not find friends for patient " + name);
         }
     }
 
