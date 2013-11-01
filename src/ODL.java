@@ -75,7 +75,8 @@ public class ODL {
                 System.out.println("1. Enter Data");
                 System.out.println("2. View Data");
                 System.out.println("3. Clear Alerts");
-                System.out.println("4. Logout");
+                System.out.println("4. Connection");
+                System.out.println("5. Logout");
                 choice = input.nextLine().charAt(0);
 
                 switch (choice) {
@@ -90,6 +91,9 @@ public class ODL {
                         deleteAlerts(pid);
                         break;
                     case '4':
+                        connections(pid);
+                        break;
+                    case '5':
                         logout = true;
                         System.out.println("You have been successfully logged out");
                         break;
@@ -101,6 +105,37 @@ public class ODL {
             }
         } else
             System.out.println("Invalid Patient Id/Password pair. Please make sure you enter correct credentials");
+    }
+
+    private static void connections(int pid) throws MyException {
+        boolean shouldContinue = true;
+        while (shouldContinue) {
+            System.out.println("1. Find a new Health Friend");
+            System.out.println("2. Find a Health Friend at Risk");
+            System.out.println("3. Go back to patient's home page");
+            char choice = input.nextLine().charAt(0);
+            switch(choice) {
+                case '1':
+                    findNewHealthFriend(pid);
+                    break;
+                case '3':
+                    shouldContinue = false;
+                    break;
+                default:
+                    System.out.println("Please Select a valid option");
+            }
+        }
+
+    }
+
+    private static void findNewHealthFriend(int pid) throws MyException {
+        System.out.println("Enter the serial number of the person you would like to be friends with: ");
+        Patient patient = Patient.getById(pid, myConn);
+        List<Patient> prospectiveFriends = patient.findHealthFriends(myConn);
+        for(int i = 1; i<= prospectiveFriends.size(); i++)
+            System.out.println(i + ". " + prospectiveFriends.get(i).name);
+        int fid = Integer.parseInt(input.nextLine());
+        HealthFriend.insert(pid, fid, myConn);
     }
 
     private static void deleteAlerts(int pid) throws MyException {

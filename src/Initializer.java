@@ -144,6 +144,8 @@ public class Initializer {
         myConn.stmt.executeUpdate("CREATE TABLE ObservationThreshold " +
                 "(qid INTEGER REFERENCES ObservationQuestion(qid) PRIMARY KEY, minValue VARCHAR2(20), maxValue VARCHAR2(20))");
 
+        myConn.stmt.executeUpdate("CREATE TABLE HealthFriend " +
+                "(pid INTEGER REFERENCES Patient(pid), fid INTEGER REFERENCES Patient(pid), PRIMARY KEY (pid, fid))");
 
 
     }

@@ -77,10 +77,10 @@ public class Patient {
         return 0;
     }
 
-    List<Integer> findProspectiveFriends(MyConnection conn) throws MyException {
+    public List<Patient> findHealthFriends(MyConnection conn) throws MyException {
         try {
-            List<Integer> prospectiveFriends = new ArrayList<Integer>();
-            String query = "select pid from patient p, PatientClassRelationship pc where p.pid <> " + this.pid + " AND p.publicStatus = 'y' " +
+            List<Patient> prospectiveFriends = new ArrayList<Patient>();
+            String query = "select pid, name from patient p, PatientClassRelationship pc where p.pid <> " + this.pid + " AND p.publicStatus = 'y' " +
                     "AND (select DISTINCT pid from PatientClassRelationship where cid in " +
                     "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + "))";
             ResultSet resultSet = null;
@@ -88,7 +88,7 @@ public class Patient {
             resultSet = conn.stmt.executeQuery(query);
 
             while(resultSet.next())
-                prospectiveFriends.add(resultSet.getInt(1));
+                prospectiveFriends.add(new Patient(resultSet.getInt(1), new Date(), resultSet.getString(2), "", "", "", ""));
             return prospectiveFriends;
 
         } catch (SQLException e) {
