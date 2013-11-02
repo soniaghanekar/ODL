@@ -81,4 +81,23 @@ public class Alert {
         }
     }
 
+    static boolean ignoredAlertExists(int pid, MyConnection connection) throws MyException {
+        Timestamp sevenDaysAgo = new Timestamp(new Date(System.currentTimeMillis() - (7L * 24 * 3600 * 1000)).getTime());
+        try {
+            String query = "select * from alert where pid = ? AND viewed = '0' AND timestamp >= ?";
+            PreparedStatement pstmt = null;
+            pstmt = connection.conn.prepareStatement(query);
+            pstmt.setInt(1, pid);
+            pstmt.setTimestamp(2, sevenDaysAgo);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next())
+                return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new MyException("Error while checking ignored alerts");
+        }
+        return false;
+    }
+
 }

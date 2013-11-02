@@ -27,7 +27,7 @@ public class HealthFriend {
         return null;
     }
 
-    static List<Integer> getFriendsForPatient(int pid, MyConnection conn) throws MyException {
+    static List<Integer> getFriendsOfPatient(int pid, MyConnection conn) throws MyException {
         try {
             String query = "select * from HealthFriend where pid = " + pid;
             ResultSet rs = conn.stmt.executeQuery(query);

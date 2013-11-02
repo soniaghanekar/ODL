@@ -168,6 +168,22 @@ public class ODL {
     }
 
     private static void viewAlerts(int patientId) throws MyException {
+        addAlertsForHealthFriends(patientId, myConn);
+        displayAlertsForPatient(patientId);
+    }
+
+    private static void addAlertsForHealthFriends(int patientId, MyConnection myConn) throws MyException {
+        Patient patient = Patient.getById(patientId, myConn);
+        List<Integer> ids = HealthFriend.getFriendsOfPatient(patientId, myConn);
+        for(int id : ids) {
+            if(Alert.ignoredAlertExists(id, myConn)) {
+                String message = "ALERT: " + patient.name + " has an observation that exceeds the threshold values";
+                Alert.insert(id, message, "0", new Date(), myConn);
+            }
+        }
+    }
+
+    private static void displayAlertsForPatient(int patientId) throws MyException {
         List<Alert> alertList = Alert.getByPId(patientId, myConn);
         for (Alert alert : alertList)
             System.out.println(alert.text + " " + alert.timestamp);
