@@ -22,7 +22,8 @@ public class ODL {
                 while (shouldContinue) {
                     System.out.println("1. Register a Patient");
                     System.out.println("2. Login as a Patient");
-                    System.out.println("3. Exit System");
+                    System.out.println("3. Login as a Health Professional");
+                    System.out.println("4. Exit System");
                     choice = input.nextLine().charAt(0);
 
                     switch (choice) {
@@ -35,6 +36,10 @@ public class ODL {
                             break;
 
                         case '3':
+                            loginAsHealthProfessional();
+                            break;
+
+                        case '4':
                             System.out.println("Thanks for using our system.. Have a nice day..");
                             System.out.println("Bye!!");
                             shouldContinue = false;
@@ -203,7 +208,7 @@ public class ODL {
                     enterObservations(patientId);
                     break;
                 case '2':
-                    enterNewObservationType();
+                    enterNewObservationType("General");
                     break;
                 case '3':
                     shouldContinue = false;
@@ -214,10 +219,10 @@ public class ODL {
         }
     }
 
-    private static void enterNewObservationType() throws MyException {
+    private static void enterNewObservationType(String category) throws MyException {
         System.out.println("Enter the observation type name :");
         String name = input.nextLine();
-        ObservationType.insertForCategory(name, "General", myConn);
+        ObservationType.insertForCategory(name, category, myConn);
         while (true) {
             System.out.println("Enter additional information question for the new type:");
             String question = input.nextLine();
@@ -361,6 +366,57 @@ public class ODL {
 
         return true;
     }
+
+    private static void loginAsHealthProfessional() throws MyException {
+        System.out.println("Enter Health Professional id: ");
+        String HealthProfessionalId = input.nextLine();
+        System.out.println("Enter password: ");
+        String password = input.nextLine();
+
+        int hpid = Integer.parseInt(HealthProfessionalId);
+        HealthProfessional healthProfessional = HealthProfessional.getById(hpid, myConn);
+        if (healthProfessional != null && healthProfessional.password.equals(password)) {
+            boolean logout = false;
+            char choice;
+
+            while (!logout) {
+                System.out.println("1. Enter New Observation Type");
+                System.out.println("2. Change Category of Observation Type");
+                System.out.println("3. New Association between Observation Type and Patient Class");
+                System.out.println("4. Change Patient Class");
+                System.out.println("5. Logout");
+                choice = input.nextLine().charAt(0);
+
+                switch (choice) {
+
+                    case '1':
+                        String category = getObservationCategoryFromUser();
+                        enterNewObservationType(category);
+                        break;
+
+                    case '5':
+                        logout = true;
+                        System.out.println("You have been successfully logged out");
+                        break;
+
+                    default:
+                        System.out.println("Please Select An Option From The Allowed Values");
+
+                }
+            }
+        } else
+            System.out.println("Invalid Health Professional Id/Password pair. Please make sure you enter correct credentials");
+    }
+
+    private static String getObservationCategoryFromUser() throws MyException {
+        System.out.println("Please select an Observation Category");
+        List<ObservationCategory> categories = ObservationCategory.getAllCategories(myConn);
+        for(int i = 1; i<= categories.size(); i++)
+            System.out.println(i + ". " + categories.get(i-1).name);
+        int ocid = Integer.parseInt(input.nextLine());
+        return categories.get(ocid-1).name;
+    }
+
 
     static void close(ResultSet rs) {
         if (rs != null) {

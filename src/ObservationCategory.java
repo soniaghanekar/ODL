@@ -1,6 +1,8 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObservationCategory {
     static int seqNum;
@@ -49,6 +51,19 @@ public class ObservationCategory {
             throw new MyException("Could not get category for " + name);
         }
         return 0;
+    }
+
+    static List<ObservationCategory> getAllCategories(MyConnection connection) throws MyException {
+        List<ObservationCategory> categories = new ArrayList<ObservationCategory>();
+        try {
+            String query = "SELECT * FROM ObservationCategory";
+            ResultSet rs = connection.stmt.executeQuery(query);
+            while (rs.next())
+                categories.add(new ObservationCategory(rs.getInt("ocid"), rs.getString("name")));
+        } catch (SQLException e) {
+            throw new MyException("Error in retrieving Observation Categories");
+        }
+        return categories;
     }
 
     static int insert(String name, MyConnection conn) throws MyException {
