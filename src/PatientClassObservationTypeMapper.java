@@ -18,7 +18,7 @@ public class PatientClassObservationTypeMapper {
         try {
             String query = "select * from PatientClassObvTypeMapper where cid = " + cid;
             ResultSet rs = conn.stmt.executeQuery(query);
-            List typeIds = new ArrayList();
+            List<Integer> typeIds = new ArrayList<Integer>();
             while (rs.next())
                 typeIds.add(rs.getInt("otid"));
             return typeIds;
@@ -52,4 +52,17 @@ public class PatientClassObservationTypeMapper {
             return cid;
         return 0;
     }
+
+    static PatientClassObservationTypeMapper getById(int cid, int otid, MyConnection conn) throws MyException {
+        try {
+            String query = "select * from PatientClassObvTypeMapper where cid = " + cid + " AND otid = " + otid;
+            ResultSet rs = conn.stmt.executeQuery(query);
+            while (rs.next())
+                return new PatientClassObservationTypeMapper(rs.getInt(1), rs.getInt(2));
+        } catch (SQLException e) {
+            throw new MyException("Error In retrieving Patient Class to Observation type mapper");
+        }
+        return null;
+    }
+
 }

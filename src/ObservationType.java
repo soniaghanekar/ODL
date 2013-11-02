@@ -104,4 +104,14 @@ public class ObservationType {
 
         }
     }
+
+    public void updatePatientClassMapping(Integer cid, MyConnection myConn) throws MyException {
+        PatientClassObservationTypeMapper isExisting= PatientClassObservationTypeMapper.getById(cid, this.otid, myConn);
+        if(isExisting == null){
+            PatientClassObservationTypeMapper.insert(cid, this.otid, myConn);
+            System.out.println("Successfully added Observation Type to the Patient Class.");
+            return;
+        }
+        System.out.println("Observation Type already belongs to this class.");
+    }
 }

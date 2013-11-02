@@ -1,5 +1,4 @@
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -399,6 +398,10 @@ public class ODL {
                         changeCategoryOfObservationType();
                         break;
 
+                    case '3':
+                        addObservationTypeToPatientClass();
+                        break;
+
                     case '4':
                         changePatientClass();
                         break;
@@ -417,30 +420,48 @@ public class ODL {
             System.out.println("Invalid Health Professional Id/Password pair. Please make sure you enter correct credentials");
     }
 
+    private static void addObservationTypeToPatientClass() throws MyException {
+        ObservationType observationType = getObservationTypeFromUser("Select Observation Type");
+        PatientClass patientClass = getPatientClassFromUser("Please select a Patient Class");
+        observationType.updatePatientClassMapping(patientClass.cid, myConn);
+    }
+
     private static void changePatientClass() throws MyException {
         List<Patient> patients = Patient.getAllPatients(myConn);
+        System.out.println("Please select a patient you want to add Class for");
         System.out.println("No.\tPatient Id\tPatient Name");
         System.out.println("_____\t__________\t____________");
         for(int i = 1; i<= patients.size(); i++)
             System.out.println(i + ". \t" + patients.get(i-1).pid + "\t" + patients.get(i-1).name);
-        System.out.println("Please select a patient you want to add Class for");
         int pid = Integer.parseInt(input.nextLine());
 
+        PatientClass patientClass = getPatientClassFromUser("Please select a Patient Class");
+        patients.get(pid-1).addClass(patientClass.cid, myConn);
+    }
+
+    private static PatientClass getPatientClassFromUser(String message) throws MyException {
         List<PatientClass> patientClasses = PatientClass.getAllPatientClass(myConn);
+        System.out.println(message);
         for(int i = 1; i<= patientClasses.size(); i++)
             System.out.println(i + "." + patientClasses.get(i-1).name);
         int cid = Integer.parseInt(input.nextLine());
-        patients.get(pid-1).addClass(patientClasses.get(cid-1).cid, myConn);
+        return patientClasses.get(cid - 1);
     }
 
     private static void changeCategoryOfObservationType() throws MyException {
+        ObservationType observationType = getObservationTypeFromUser("Please select the Observation Type " +
+                "You want to change Category of");
+        ObservationCategory category = getObservationCategoryFromUser();
+        observationType.updateCategory(category.ocid, myConn);
+    }
+
+    private static ObservationType getObservationTypeFromUser(String message) throws MyException {
         List<ObservationType> types = ObservationType.getAllTypes(myConn);
-        System.out.println("Please select the Observation Type You want to change Category of");
+        System.out.println(message);
         for(int i = 1; i<= types.size(); i++)
             System.out.println(i + ". " + types.get(i-1).name);
         int otid = Integer.parseInt(input.nextLine());
-        ObservationCategory category = getObservationCategoryFromUser();
-        types.get(otid-1).updateCategory(category.ocid, myConn);
+        return types.get(otid - 1);
     }
 
     private static ObservationCategory getObservationCategoryFromUser() throws MyException {
