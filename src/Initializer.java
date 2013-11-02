@@ -155,6 +155,8 @@ public class Initializer {
         myConn.stmt.executeUpdate("CREATE TABLE HealthFriend " +
                 "(pid INTEGER REFERENCES Patient(pid), fid INTEGER REFERENCES Patient(pid), PRIMARY KEY (pid, fid))");
 
+        myConn.stmt.executeUpdate("CREATE TABLE HealthProfessional " +
+                "(hpid INTEGER PRIMARY KEY, name VARCHAR2(25), clinic VARCHAR2(30), password VARCHAR2(30))");
 
     }
 
