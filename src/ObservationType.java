@@ -1,6 +1,8 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObservationType {
     static int seqNum;
@@ -76,5 +78,31 @@ public class ObservationType {
         int ocid = ObservationCategory.getCategoryIdByName(catName, connection);
         if (ocid != 0)
             insert(obsName, ocid, connection);
+    }
+
+    public static List<ObservationType> getAllTypes(MyConnection myConn) throws MyException {
+        List<ObservationType> types = new ArrayList<ObservationType>();
+        String query = "SELECT * from ObservationType";
+        ResultSet resultSet = null;
+        try {
+            resultSet = myConn.stmt.executeQuery(query);
+            while (resultSet.next())
+                types.add(new ObservationType(resultSet.getInt("otid"), resultSet.getString("name"),
+                        resultSet.getInt("ocid")));
+
+        } catch (SQLException e) {
+            throw new MyException("Error in retrieving Observation Types");
+        }
+        return types;
+    }
+
+    public void updateCategory(int ocid, MyConnection myConnection) throws MyException {
+        String query = "UPDATE ObservationType set ocid = " + ocid +" where otid = " + this.otid;
+        try {
+            myConnection.stmt.executeUpdate(query);
+        } catch (SQLException e) {
+            throw new MyException("Error in updating Observation Type with name " + this.name);
+
+        }
     }
 }

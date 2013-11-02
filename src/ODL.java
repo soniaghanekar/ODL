@@ -1,4 +1,5 @@
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -390,8 +391,12 @@ public class ODL {
                 switch (choice) {
 
                     case '1':
-                        String category = getObservationCategoryFromUser();
-                        enterNewObservationType(category);
+                        ObservationCategory category = getObservationCategoryFromUser();
+                        enterNewObservationType(category.name);
+                        break;
+
+                    case '2':
+                        changeCategoryOfObservationType();
                         break;
 
                     case '5':
@@ -408,13 +413,23 @@ public class ODL {
             System.out.println("Invalid Health Professional Id/Password pair. Please make sure you enter correct credentials");
     }
 
-    private static String getObservationCategoryFromUser() throws MyException {
+    private static void changeCategoryOfObservationType() throws MyException {
+        List<ObservationType> types = ObservationType.getAllTypes(myConn);
+        System.out.println("Please select the Observation Type You want to change Category of");
+        for(int i = 1; i<= types.size(); i++)
+            System.out.println(i + ". " + types.get(i-1).name);
+        int otid = Integer.parseInt(input.nextLine());
+        ObservationCategory category = getObservationCategoryFromUser();
+        types.get(otid-1).updateCategory(category.ocid, myConn);
+    }
+
+    private static ObservationCategory getObservationCategoryFromUser() throws MyException {
         System.out.println("Please select an Observation Category");
         List<ObservationCategory> categories = ObservationCategory.getAllCategories(myConn);
         for(int i = 1; i<= categories.size(); i++)
             System.out.println(i + ". " + categories.get(i-1).name);
         int ocid = Integer.parseInt(input.nextLine());
-        return categories.get(ocid-1).name;
+        return categories.get(ocid-1);
     }
 
 
