@@ -48,7 +48,7 @@ public class Initializer {
         insertPatientClasses(myConn);
         insertObservationCategories(myConn);
         insertObservationTypes(myConn);
-        insertQuestions(myConn);
+        insertQuestionsWithThreshold(myConn);
         insertClassObvTypeData(myConn);
     }
 
@@ -74,20 +74,28 @@ public class Initializer {
         ObservationType.insertForCategory("Temperature", "Psychological", myConn);
     }
 
-    private static void insertQuestions(MyConnection myConn) throws MyException {
+    private static void insertQuestionsWithThreshold(MyConnection myConn) throws MyException {
+        int qid;
         ObservationQuestion.insertByTypeName("Diet", "What was consumed?", myConn);
         ObservationQuestion.insertByTypeName("Diet", "How much was consumed?", myConn);
         ObservationQuestion.insertByTypeName("Weight", "How much was your weight?", myConn);
         ObservationQuestion.insertByTypeName("Exercise", "What kind of exercise was done?", myConn);
         ObservationQuestion.insertByTypeName("Exercise", "For how much time?", myConn);
-        ObservationQuestion.insertByTypeName("Blood Pressure", "How much was the Systolic pressure?", myConn);
-        ObservationQuestion.insertByTypeName("Blood Pressure", "How much was the Diastolic pressure?", myConn);
-        ObservationQuestion.insertByTypeName("Exercise Tolerance", "Enter the number of steps before exhaustion", myConn);
-        ObservationQuestion.insertByTypeName("Oxygen Saturation", "Enter the oxygen saturation amount", myConn);
-        ObservationQuestion.insertByTypeName("Pain", "Enter the pain levels: Scale[1-10] ", myConn);
+        qid = ObservationQuestion.insertByTypeName("Blood Pressure", "How much was the Systolic pressure?", myConn);
+        ObservationThreshold.insert(qid, 120, myConn);
+        qid = ObservationQuestion.insertByTypeName("Blood Pressure", "How much was the Diastolic pressure?", myConn);
+        ObservationThreshold.insert(qid, 80, myConn);
+        qid = ObservationQuestion.insertByTypeName("Exercise Tolerance", "Enter the number of steps before exhaustion", myConn);
+        ObservationThreshold.insert(qid, -180, myConn);
+        qid = ObservationQuestion.insertByTypeName("Oxygen Saturation", "Enter the oxygen saturation percentage", myConn);
+        ObservationThreshold.insert(qid, -95, myConn);
+        qid = ObservationQuestion.insertByTypeName("Pain", "Enter the pain levels: Scale[1-10] ", myConn);
+        ObservationThreshold.insert(qid, 9, myConn);
         ObservationQuestion.insertByTypeName("Mood", "Enter mood from one amongst these: {Happy, Sad, Neutral}", myConn);
-        ObservationQuestion.insertByTypeName("Contraction", "Enter frequency (Number of times every half an hour)", myConn);
-        ObservationQuestion.insertByTypeName("Temperature", "Enter your temperature", myConn);
+        qid = ObservationQuestion.insertByTypeName("Contraction", "Enter frequency (Number of times every half an hour)", myConn);
+        ObservationThreshold.insert(qid, 10, myConn);
+        qid = ObservationQuestion.insertByTypeName("Temperature", "Enter your temperature (in Fahrenheit)", myConn);
+        ObservationThreshold.insert(qid, 100, myConn);
     }
 
     private static void insertClassObvTypeData(MyConnection myConn) throws MyException {
@@ -142,7 +150,7 @@ public class Initializer {
                 "PRIMARY KEY (pid, text), CONSTRAINT viewed_values CHECK (viewed IN ('1', '0')))");
 
         myConn.stmt.executeUpdate("CREATE TABLE ObservationThreshold " +
-                "(qid INTEGER REFERENCES ObservationQuestion(qid) PRIMARY KEY, minValue VARCHAR2(20), maxValue VARCHAR2(20))");
+                "(qid INTEGER REFERENCES ObservationQuestion(qid) PRIMARY KEY, threshold NUMBER)");
 
         myConn.stmt.executeUpdate("CREATE TABLE HealthFriend " +
                 "(pid INTEGER REFERENCES Patient(pid), fid INTEGER REFERENCES Patient(pid), PRIMARY KEY (pid, fid))");
