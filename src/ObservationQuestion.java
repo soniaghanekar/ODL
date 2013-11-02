@@ -76,9 +76,11 @@ public class ObservationQuestion {
         return 0;
     }
 
-    static void insertByTypeName(String name, String text, MyConnection conn) throws MyException {
+    static int insertByTypeName(String name, String text, MyConnection conn) throws MyException {
         int otid = ObservationType.getIdFromName(name, conn);
         if(otid != 0){
-            insert(text, otid, conn);}
+            insert(text, otid, conn);
+        }
+        return otid;
     }
 }

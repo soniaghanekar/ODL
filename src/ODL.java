@@ -224,14 +224,22 @@ public class ODL {
         int typeNo = Integer.parseInt(input.nextLine());
         int otid = availableTypes.get(typeNo - 1);
         List<ObservationQuestion> questions = ObservationQuestion.getByObservationType(otid, myConn);
+        Date obsDate = getObservationDate();
         for (ObservationQuestion question : questions) {
             System.out.println(question.text);
             String answer = input.nextLine();
-            Date obsDate = getObservationDate();
             Date recordDate = new Date();
             Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
+            if(ObservationThreshold.crossesThreshold(question.qid, Integer.parseInt(answer), myConn))
+                addThresholdAlert(patientId, question.qid, myConn);
         }
 
+    }
+
+    private static void addThresholdAlert(int patientId, int qid, MyConnection myConn) throws MyException {
+        String message = "ALERT: Your values for the question: " + ObservationQuestion.getById(qid, myConn).text +
+                "crosses the threshold values";
+        Alert.insert(patientId, message, "0", new Date(), myConn);
     }
 
     private static void viewObservations(int patientId) throws MyException {
