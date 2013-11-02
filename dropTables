@@ -1,3 +1,4 @@
+drop table healthfriend;
 drop table observationThreshold;
 drop table alert;
 drop table patientclassobvtypemapper;
