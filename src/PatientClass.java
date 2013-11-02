@@ -1,7 +1,9 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class PatientClass {
     static int seqNum;
@@ -69,6 +71,19 @@ public class PatientClass {
             throw new MyException("Insertion of patient class with name " + name + " failed");
         }
         return 0;
+    }
+
+    public static List<PatientClass> getAllPatientClass(MyConnection myConn) throws MyException {
+        List<PatientClass> patientClasses = new ArrayList<PatientClass>();
+        String query = "SELECT * from PatientClass";
+        try {
+            ResultSet resultSet = myConn.stmt.executeQuery(query);
+            while (resultSet.next())
+                patientClasses.add(new PatientClass(resultSet.getInt(1), resultSet.getString(2)));
+        } catch (SQLException e) {
+            throw new MyException("Error in retrieving Patient Classes");
+        }
+        return patientClasses;
     }
 
 }

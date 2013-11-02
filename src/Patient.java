@@ -97,4 +97,28 @@ public class Patient {
         }
     }
 
+    public static List<Patient> getAllPatients(MyConnection myConn) throws MyException {
+        List<Patient> patients = new ArrayList<Patient>();
+        String query = "SELECT * from Patient";
+        try {
+            ResultSet resultSet = myConn.stmt.executeQuery(query);
+            while (resultSet.next())
+                patients.add(new Patient(resultSet.getInt(1),resultSet.getDate(2),resultSet.getString(3),
+                        resultSet.getString(4),resultSet.getString(5), resultSet.getString(6), resultSet.getString(7)));
+
+        } catch (SQLException e) {
+            throw new MyException("Error in retrieving Patients");
+        }
+        return patients;
+    }
+
+    public void addClass(Integer cid, MyConnection myConn) throws MyException {
+        PatientClassRelationship isExisting = PatientClassRelationship.getById(this.pid, cid, myConn);
+        if(isExisting == null){
+            PatientClassRelationship.insert(this.pid, cid, myConn);
+            System.out.println("Successfully added Patient to class");
+            return;
+        }
+        System.out.println("Patient already belongs to this class.");
+    }
 }

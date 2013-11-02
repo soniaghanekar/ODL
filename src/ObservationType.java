@@ -83,9 +83,8 @@ public class ObservationType {
     public static List<ObservationType> getAllTypes(MyConnection myConn) throws MyException {
         List<ObservationType> types = new ArrayList<ObservationType>();
         String query = "SELECT * from ObservationType";
-        ResultSet resultSet = null;
         try {
-            resultSet = myConn.stmt.executeQuery(query);
+            ResultSet resultSet = myConn.stmt.executeQuery(query);
             while (resultSet.next())
                 types.add(new ObservationType(resultSet.getInt("otid"), resultSet.getString("name"),
                         resultSet.getInt("ocid")));

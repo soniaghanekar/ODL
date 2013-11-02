@@ -399,6 +399,10 @@ public class ODL {
                         changeCategoryOfObservationType();
                         break;
 
+                    case '4':
+                        changePatientClass();
+                        break;
+
                     case '5':
                         logout = true;
                         System.out.println("You have been successfully logged out");
@@ -411,6 +415,22 @@ public class ODL {
             }
         } else
             System.out.println("Invalid Health Professional Id/Password pair. Please make sure you enter correct credentials");
+    }
+
+    private static void changePatientClass() throws MyException {
+        List<Patient> patients = Patient.getAllPatients(myConn);
+        System.out.println("No.\tPatient Id\tPatient Name");
+        System.out.println("_____\t__________\t____________");
+        for(int i = 1; i<= patients.size(); i++)
+            System.out.println(i + ". \t" + patients.get(i-1).pid + "\t" + patients.get(i-1).name);
+        System.out.println("Please select a patient you want to add Class for");
+        int pid = Integer.parseInt(input.nextLine());
+
+        List<PatientClass> patientClasses = PatientClass.getAllPatientClass(myConn);
+        for(int i = 1; i<= patientClasses.size(); i++)
+            System.out.println(i + "." + patientClasses.get(i-1).name);
+        int cid = Integer.parseInt(input.nextLine());
+        patients.get(pid-1).addClass(patientClasses.get(cid-1).cid, myConn);
     }
 
     private static void changeCategoryOfObservationType() throws MyException {
