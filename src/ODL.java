@@ -145,8 +145,9 @@ public class ODL {
         List<Patient> prospectiveFriends = patient.findHealthFriends(myConn);
         for(int i = 1; i<= prospectiveFriends.size(); i++)
             System.out.println(i + ". " + prospectiveFriends.get(i-1).name);
+        if(prospectiveFriends.size() > 0){
         int fid = Integer.parseInt(input.nextLine());
-        HealthFriend.insert(pid, prospectiveFriends.get(fid-1).pid, myConn);
+        HealthFriend.insert(pid, prospectiveFriends.get(fid-1).pid, myConn);}
     }
 
     private static void displayHealthFriendAtRisk(int pid) throws MyException {
