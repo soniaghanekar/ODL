@@ -34,7 +34,7 @@ public class HealthProfessional {
 
     static HealthProfessional getById(int hpid, MyConnection conn) throws MyException {
         try {
-            String query = "select * from patient where hpid = " + hpid;
+            String query = "select * from HealthProfessional where hpid = " + hpid;
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next()) {
                 return new HealthProfessional(rs.getInt("hpid"), rs.getString("name"),

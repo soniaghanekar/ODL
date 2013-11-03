@@ -140,14 +140,15 @@ public class ODL {
     }
 
     private static void findNewHealthFriend(int pid) throws MyException {
-        System.out.println("Enter the serial number of the person you would like to be friends with: ");
         Patient patient = Patient.getById(pid, myConn);
         List<Patient> prospectiveFriends = patient.findHealthFriends(myConn);
-        for(int i = 1; i<= prospectiveFriends.size(); i++)
-            System.out.println(i + ". " + prospectiveFriends.get(i-1).name);
-        if(prospectiveFriends.size() > 0){
-        int fid = Integer.parseInt(input.nextLine());
-        HealthFriend.insert(pid, prospectiveFriends.get(fid-1).pid, myConn);}
+        for (int i = 1; i <= prospectiveFriends.size(); i++)
+            System.out.println(i + ". " + prospectiveFriends.get(i - 1).name);
+        if (prospectiveFriends.size() > 0) {
+            System.out.println("Enter the serial number of the person you would like to be friends with: ");
+            int fid = Integer.parseInt(input.nextLine());
+            HealthFriend.insert(pid, prospectiveFriends.get(fid - 1).pid, myConn);
+        }
     }
 
     private static void displayHealthFriendAtRisk(int pid) throws MyException {
