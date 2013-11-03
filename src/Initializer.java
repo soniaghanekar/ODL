@@ -50,6 +50,7 @@ public class Initializer {
         insertObservationTypes(myConn);
         insertQuestionsWithThreshold(myConn);
         insertClassObvTypeData(myConn);
+        HealthProfessional.insert("admin", "pune", "password", myConn);
     }
 
     private static void insertObservationCategories(MyConnection myConn) throws MyException {
