@@ -1,4 +1,7 @@
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -245,7 +248,9 @@ public class ODL {
         int typeNo = Integer.parseInt(input.nextLine());
         int otid = availableTypes.get(typeNo - 1);
         List<ObservationQuestion> questions = ObservationQuestion.getByObservationType(otid, myConn);
-        Date obsDate = getObservationDate();
+        String message = "Enter date and time of the observation (in MM/dd/yyyy hh:mm AM/PM ex: 10/04/2013 10:15 AM): ";
+        String format = "MM/dd/yyyy hh:mm a";
+        Date obsDate = getDateFromUser(message, format);
         for (ObservationQuestion question : questions) {
             System.out.println(question.text);
             String answer = input.nextLine();
@@ -299,14 +304,14 @@ public class ODL {
         return new ArrayList<Integer>(availableTypesSet);
     }
 
-    private static Date getObservationDate() {
+    private static Date getDateFromUser(String message, String format) {
         while (true) {
             try {
-                System.out.println("Enter date and time of the observation (in MM/dd/yyyy hh:mm AM/PM ex: 10/04/2013 10:15 AM): ");
+                System.out.println(message);
                 String date = input.nextLine();
-                return getDateFromString(date, "MM/dd/yyyy hh:mm a");
+                return getDateFromString(date, format);
             } catch (ParseException e) {
-                System.out.println("Please enter date and time in proper format ex: 10/04/2013 10:15 AM");
+                System.out.println("Please enter date and time in proper format");
             }
         }
 
@@ -389,7 +394,8 @@ public class ODL {
                 System.out.println("2. Change Category of Observation Type");
                 System.out.println("3. New Association between Observation Type and Patient Class");
                 System.out.println("4. Change Patient Class");
-                System.out.println("5. Logout");
+                System.out.println("5. View Aggregated Report");
+                System.out.println("6. Logout");
                 choice = input.nextLine().charAt(0);
 
                 switch (choice) {
@@ -412,6 +418,10 @@ public class ODL {
                         break;
 
                     case '5':
+                        aggregatedReport();
+                        break;
+
+                    case '6':
                         logout = true;
                         System.out.println("You have been successfully logged out");
                         break;
@@ -423,6 +433,42 @@ public class ODL {
             }
         } else
             System.out.println("Invalid Health Professional Id/Password pair. Please make sure you enter correct credentials");
+    }
+
+    private static void aggregatedReport() throws MyException {
+        PatientClass patientClass = getPatientClassFromUser("Please select a Patient Class");
+        ObservationType observationType = getObservationTypeFromUser("Please select an Observation Type");
+        ObservationQuestion observationQuestion = getObservationQuestionFromUser("Please select an Observation Question", observationType.otid);
+
+        System.out.println("Please enter the date range for filter: ");
+        String message1 = "Please enter start time in mm/dd/yyyy format eg. 03/08/1988:";
+        String format = "MM/dd/yyyy";
+        Date startTime = getDateFromUser(message1,format);
+
+        String message2 = "Please enter end time in mm/dd/yyyy format eg. 03/08/1988:";
+        Date endTime = getDateFromUser(message2,format);
+        Timestamp strt = new Timestamp(startTime.getTime());
+        Timestamp end = new Timestamp(endTime.getTime());
+
+        String func = getAggregateFunction();
+        String query = "select p.pid, "+func+"(*) from patient p, " +
+                "observation o, PatientClassRelationship pc " +
+                "where pc.pid=p.pid and p.pid=o.pid and " +
+                "o.otid = "+observationType.otid+" and o.qid="+observationQuestion.qid+" and " +
+                "o.obvTimestamp >= ? and o.obvTimestamp <= ? " +
+                "and pc.cid = (select cid from PatientClass where name = "+patientClass.name+") group by p.pid";
+        try {
+            PreparedStatement pstmt = myConn.conn.prepareStatement(query);
+            pstmt.setTimestamp(1, strt);
+            pstmt.setTimestamp(2, end);
+            ResultSet resultSet = pstmt.executeQuery();
+            while (resultSet.next())
+                System.out.println(resultSet.getInt(1) + "\t" + resultSet.getInt(2));
+        } catch (SQLException e) {
+            System.out.println("The query can not be run. This may be because the aggregation is not supported");
+        }
+
+
     }
 
     private static void addObservationTypeToPatientClass() throws MyException {
@@ -453,6 +499,29 @@ public class ODL {
         return patientClasses.get(cid - 1);
     }
 
+    private static String getAggregateFunction(){
+        while (true) {
+            System.out.println("1. Average");
+            System.out.println("2. Minimum");
+            System.out.println("3. Maximum");
+            System.out.println("4. Count");
+            char choice = input.nextLine().charAt(0);
+
+            switch (choice) {
+                case '1':
+                    return "AVG";
+                case '2':
+                    return "MIN";
+                case '3':
+                    return "MAX";
+                case '4':
+                    return "COUNT";
+                default:
+                    System.out.println("Please Select An Option From The Allowed Values");
+            }
+        }
+    }
+
     private static void changeCategoryOfObservationType() throws MyException {
         ObservationType observationType = getObservationTypeFromUser("Please select the Observation Type " +
                 "You want to change Category of");
@@ -467,6 +536,15 @@ public class ODL {
             System.out.println(i + ". " + types.get(i-1).name);
         int otid = Integer.parseInt(input.nextLine());
         return types.get(otid - 1);
+    }
+
+    private static ObservationQuestion getObservationQuestionFromUser(String message, Integer otid) throws MyException {
+        List<ObservationQuestion> questions = ObservationQuestion.getAllQuestionsForType(myConn,otid);
+        System.out.println(message);
+        for(int i = 1; i<= questions.size(); i++)
+            System.out.println(i + ". " + questions.get(i-1).text);
+        int qid = Integer.parseInt(input.nextLine());
+        return questions.get(qid - 1);
     }
 
     private static ObservationCategory getObservationCategoryFromUser() throws MyException {

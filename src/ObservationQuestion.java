@@ -84,4 +84,18 @@ public class ObservationQuestion {
         }
         return 0;
     }
+
+    public static List<ObservationQuestion> getAllQuestionsForType(MyConnection myConn, Integer otid) throws MyException {
+        List<ObservationQuestion> questions = new ArrayList<ObservationQuestion>();
+        String query = "SELECT * from ObservationQuestion where otid = " + otid;
+        try {
+            ResultSet resultSet = myConn.stmt.executeQuery(query);
+            while (resultSet.next())
+                questions.add(new ObservationQuestion(resultSet.getInt(1),resultSet.getString(2), resultSet.getInt(3)));
+
+        } catch (SQLException e) {
+            throw new MyException("Error in retrieving Observation Types");
+        }
+        return questions;
+    }
 }
