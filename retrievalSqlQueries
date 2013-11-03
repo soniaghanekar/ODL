@@ -44,6 +44,3 @@ select p.pid,ot.otid,count(CASE WHEN p.pid=o.pid and ot.otid=o.otid THEN 1 END) 
 
 3)
 select p.pid,f.fid,count(case when p.pid=f.pid and f.fid=a.pid and a.viewed = '0' then 1 end) "Lingering Alerts" from patient p, healthfriend f,alert a group by p.pid,f.fid having p.pid=f.pid order by p.pid
-
-
-select h.fid from healthfriend h,alert a where h.pid = ? and a.viewed='0' and a.pid=h.fid;
