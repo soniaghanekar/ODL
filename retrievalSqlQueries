@@ -1,0 +1,49 @@
+1)
+Lowest weight:
+
+select pid from patient p,observation o, PatientClassRelationship pc where p.pid=o.pid and
+o.to_number(answer) = (select MIN(to_number(answer))
+from observation
+where otid = (select otid from ObservationType where name = 'Weight')) and
+p.pid = pc.pid and pc.cid = (select cid from PatientClass where name = 'HIV');
+
+2)
+Highest Blood pressure:
+
+select pid from patient p,observation o, PatientClassRelationship pc where p.pid=o.pid and
+o.to_number(answer) = (select MAX(to_number(answer))
+from observation
+where otid = (select otid from ObservationType where name = 'Blood Pressure')) and
+p.pid = pc.pid and (pc.cid = (select cid from PatientClass where name = 'High Risk Pregnancy')
+or pc.cid = (select cid from PatientClass where name = 'Obesity'));
+
+3)
+
+select DISTINCT pid from patient where pid not in
+(select pid HealthFriend where fid IN (select pid from alert where viewed = "0"));
+
+4)
+
+select p1.pid from patient p1, HealthFriend h, patient p2 where p1.pid = h.pid and p2.pid = h.fid and
+p1.city = p2.city and p1.pid <> p2.pid
+
+5)
+
+select fid from HealthFriend where pid = ? ORDER BY timestamp ASC
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+1)
+
+select pid, count(fid) from HealthFriend where timestamp >= sysdate - interval '1' month GROUP BY pid
+
+2)
+
+select p.pid,ot.otid,count(CASE WHEN p.pid=o.pid and ot.otid=o.otid THEN 1 END) "Observation Count" from patient p, ObservationType ot, Observation o group by p.pid,ot.otid;
+
+3)
+select p.pid,f.fid,count(case when p.pid=f.pid and f.fid=a.pid and a.viewed = '0' then 1 end) "Lingering Alerts" from patient p, healthfriend f,alert a group by p.pid,f.fid having p.pid=f.pid order by p.pid
+
+
+select h.fid from healthfriend h,alert a where h.pid = ? and a.viewed='0' and a.pid=h.fid;
