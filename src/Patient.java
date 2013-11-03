@@ -13,16 +13,20 @@ public class Patient {
     int pid;
     Date dob;
     String name;
-    String address;
+    int aptNo;
+    String city;
+    String country;
     String sex;
     String publicStatus;
     String password;
 
-    private Patient(int pid, Date dob, String name, String address, String sex, String publicStatus, String password) {
+    private Patient(int pid, Date dob, String name, int aptNo, String city, String country, String sex, String publicStatus, String password) {
         this.pid = pid;
         this.dob = dob;
         this.name = name;
-        this.address = address;
+        this.aptNo = aptNo;
+        this.city = city;
+        this.country = country;
         this.sex = sex;
         this.publicStatus = publicStatus;
         this.password = password;
@@ -43,8 +47,9 @@ public class Patient {
             String query = "select * from patient where pid = " + pid;
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next()) {
-                return new Patient(rs.getInt("pid"), rs.getDate("dob"), rs.getString("name"), rs.getString("address"),
-                        rs.getString("sex"), rs.getString("publicStatus"), rs.getString("password"));
+                return new Patient(rs.getInt("pid"), rs.getDate("dob"), rs.getString("name"), rs.getInt("aptNo"),
+                        rs.getString("city"), rs.getString("country"), rs.getString("sex"), rs.getString("publicStatus"),
+                        rs.getString("password"));
             }
         } catch (SQLException e) {
             throw new MyException("Could not get patient with id " + pid);
@@ -52,20 +57,23 @@ public class Patient {
         return null;
     }
 
-    static int insert(Date dob, String name, String address, String sex, String publicStatus, String password, MyConnection conn)
+    static int insert(Date dob, String name, int aptNo, String city, String country, String sex, String publicStatus,
+                      String password, MyConnection conn)
             throws MyException {
         java.sql.Date longDOB = new java.sql.Date(dob.getTime());
         try {
             setSeqNum(conn);
-            String query = "INSERT INTO patient values(?,?,?,?,?,?,?)";
+            String query = "INSERT INTO patient values(?,?,?,?,?,?,?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, seqNum);
             pstmt.setDate(2, longDOB);
             pstmt.setString(3, name);
-            pstmt.setString(4, address);
-            pstmt.setString(5, sex);
-            pstmt.setString(6, publicStatus);
-            pstmt.setString(7, password);
+            pstmt.setInt(4, aptNo);
+            pstmt.setString(5, city);
+            pstmt.setString(6, country);
+            pstmt.setString(7, sex);
+            pstmt.setString(8, publicStatus);
+            pstmt.setString(9, password);
             int ret = pstmt.executeUpdate();
 
             if (ret != 0)
@@ -88,7 +96,8 @@ public class Patient {
             resultSet = conn.stmt.executeQuery(query);
 
             while(resultSet.next())
-                prospectiveFriends.add(new Patient(resultSet.getInt(1), new Date(), resultSet.getString(2), "", "", "", ""));
+                prospectiveFriends.add(new Patient(resultSet.getInt(1), new Date(), resultSet.getString(2), 0, "", "",
+                        "", "", ""));
             return prospectiveFriends;
 
         } catch (SQLException e) {
@@ -103,8 +112,9 @@ public class Patient {
         try {
             ResultSet resultSet = myConn.stmt.executeQuery(query);
             while (resultSet.next())
-                patients.add(new Patient(resultSet.getInt(1),resultSet.getDate(2),resultSet.getString(3),
-                        resultSet.getString(4),resultSet.getString(5), resultSet.getString(6), resultSet.getString(7)));
+                patients.add(new Patient(resultSet.getInt(1),resultSet.getDate(2),resultSet.getString(3), resultSet.getInt(4),
+                        resultSet.getString(5), resultSet.getString(6), resultSet.getString(7), resultSet.getString(8),
+                        resultSet.getString(9)));
 
         } catch (SQLException e) {
             throw new MyException("Error in retrieving Patients");

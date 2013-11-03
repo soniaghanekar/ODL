@@ -140,7 +140,7 @@ public class ODL {
         for(int i = 1; i<= prospectiveFriends.size(); i++)
             System.out.println(i + ". " + prospectiveFriends.get(i-1).name);
         int fid = Integer.parseInt(input.nextLine());
-        HealthFriend.insert(pid, fid, myConn);
+        HealthFriend.insert(pid, prospectiveFriends.get(fid-1).pid, myConn);
     }
 
     private static void deleteAlerts(int pid) throws MyException {
@@ -316,7 +316,12 @@ public class ODL {
         System.out.println("Please enter patients name:");
         String name = input.nextLine();
         System.out.println("Please enter patients address:");
-        String address = input.nextLine();
+        System.out.println("Apartment number:");
+        int aptNo = Integer.parseInt(input.nextLine());
+        System.out.println("City:");
+        String city = input.nextLine();
+        System.out.println("Country:");
+        String country = input.nextLine();
         System.out.println("Please enter patients date of birth in mm/dd/yyyy format eg. 03/08/1988:");
         String dob = input.nextLine();
         System.out.println("Please enter patients sex(m/f):");
@@ -327,7 +332,7 @@ public class ODL {
         String password = input.nextLine();
 
         if (checkArgumentsForPatient(dob, sex, publicStatus, password)) {
-            int patientId = Patient.insert(getDateFromString(dob, "MM/dd/yyyy"), name, address, sex.toLowerCase(),
+            int patientId = Patient.insert(getDateFromString(dob, "MM/dd/yyyy"), name, aptNo, city, country, sex.toLowerCase(),
                     publicStatus.toLowerCase(), password.trim(), myConn);
             if (patientId > 0) {
                 System.out.println("A patient has been created with id " + patientId + ".");

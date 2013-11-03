@@ -116,7 +116,7 @@ public class Initializer {
     private static void createTables(MyConnection myConn) throws SQLException {
         myConn.stmt.executeUpdate("CREATE TABLE Patient " +
                 "(pid INTEGER PRIMARY KEY, dob DATE, " +
-                "name VARCHAR2(25), address VARCHAR2(30), sex VARCHAR2(1), publicStatus VARCHAR2(1), " +
+                "name VARCHAR2(25), aptNo INTEGER, city varchar2(20), country varchar2(20), sex VARCHAR2(1), publicStatus VARCHAR2(1), " +
                 "password VARCHAR2(30))");
 
         myConn.stmt.executeUpdate("CREATE TABLE PatientClass " +
@@ -153,7 +153,8 @@ public class Initializer {
                 "(qid INTEGER REFERENCES ObservationQuestion(qid) PRIMARY KEY, threshold NUMBER)");
 
         myConn.stmt.executeUpdate("CREATE TABLE HealthFriend " +
-                "(pid INTEGER REFERENCES Patient(pid), fid INTEGER REFERENCES Patient(pid), PRIMARY KEY (pid, fid))");
+                "(pid INTEGER REFERENCES Patient(pid), fid INTEGER REFERENCES Patient(pid), timestamp TIMESTAMP(2), " +
+                "PRIMARY KEY (pid, fid))");
 
         myConn.stmt.executeUpdate("CREATE TABLE HealthProfessional " +
                 "(hpid INTEGER PRIMARY KEY, name VARCHAR2(25), clinic VARCHAR2(30), password VARCHAR2(30))");

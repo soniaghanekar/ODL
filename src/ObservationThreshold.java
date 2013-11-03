@@ -45,7 +45,7 @@ public class ObservationThreshold {
         int threshold = getThresholdFor(qid, connection);
         if(threshold != 0) {
             if(threshold < 0)
-                return threshold > value;
+                return Math.abs(threshold) > value;
             return value > threshold;
         }
         return false;

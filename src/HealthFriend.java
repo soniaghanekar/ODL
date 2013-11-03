@@ -1,17 +1,21 @@
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class HealthFriend {
 
     int pid;
     int fid;
+    Date timestamp;
 
-    private HealthFriend(int pid, int fid) {
+    private HealthFriend(int pid, int fid, Date timestamp) {
         this.pid = pid;
         this.fid = fid;
+        this.timestamp = timestamp;
     }
 
     static HealthFriend getById(int pid, int fid, MyConnection conn) throws MyException {
@@ -19,7 +23,7 @@ public class HealthFriend {
             String query = "select * from HealthFriend where pid = " + pid + " AND fid = " + fid;
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next())
-                return new HealthFriend(rs.getInt("pid"), rs.getInt("fid"));
+                return new HealthFriend(rs.getInt("pid"), rs.getInt("fid"), rs.getTimestamp("timestamp"));
 
         } catch (SQLException e) {
             throw new MyException("Could not get class for patient with id = " + pid);
@@ -41,11 +45,13 @@ public class HealthFriend {
     }
 
     static int insert(int pid, int fid, MyConnection conn) throws MyException {
+        Timestamp timestamp = new Timestamp(new Date().getTime());
         try {
-            String query = "INSERT INTO HealthFriend values(?,?)";
+            String query = "INSERT INTO HealthFriend values(?,?,?)";
             PreparedStatement pstmt = conn.conn.prepareStatement(query);
             pstmt.setInt(1, pid);
             pstmt.setInt(2, fid);
+            pstmt.setTimestamp(3, timestamp);
             int ret = pstmt.executeUpdate();
 
             if (ret != 0)
