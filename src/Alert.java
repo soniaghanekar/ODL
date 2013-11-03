@@ -28,6 +28,7 @@ public class Alert {
                 return new Alert(rs.getInt("pid"), rs.getString("text"), rs.getString("viewed"), rs.getDate("timestamp"));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new MyException("Could not get alert for pid = " + pid + " and text = " + text);
         }
         return null;
@@ -42,12 +43,13 @@ public class Alert {
                 alertList.add(new Alert(rs.getInt("pid"), rs.getString("text"), rs.getString("viewed"), rs.getDate("timestamp")));
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new MyException("Could not get alert for pid = " + pid);
         }
         return alertList;
     }
 
-    static void insert(int pid, String text, String viewed, Date timestamp, MyConnection conn) throws MyException {
+    static void insert(int pid, String text, String viewed, Date timestamp, MyConnection conn) {
         Timestamp longTimestamp = new Timestamp(timestamp.getTime());
         try {
             String query = "INSERT INTO alert values(?,?,?,?)";
@@ -58,16 +60,18 @@ public class Alert {
             pstmt.setTimestamp(4, longTimestamp);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            throw new MyException("Insertion into alerts failed for pid " + pid);
+            return;
         }
     }
 
     void markViewed(MyConnection conn) throws MyException {
         this.viewed = "1";
         String query = "UPDATE alert SET viewed = '1' where pid = "+this.pid+" AND text = " + this.text;
+        System.out.println("****query " +query);
         try {
             conn.stmt.executeUpdate(query);
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new MyException("Marking alert for pid = " + pid + " as viewed failed");
         }
     }
@@ -77,6 +81,7 @@ public class Alert {
         try {
             conn.stmt.executeQuery(query);
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new MyException("Deletion of viewed alerts failed for pid = " + pid);
         }
     }
