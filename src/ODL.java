@@ -265,8 +265,12 @@ public class ODL {
             String answer = input.nextLine();
             Date recordDate = new Date();
             Observation.insert(patientId, otid, obsDate, recordDate, question.qid, answer, myConn);
-            if(ObservationThreshold.crossesThreshold(question.qid, Integer.parseInt(answer), myConn))
-                addThresholdAlert(patientId, question.qid, myConn);
+            try{
+                if(ObservationThreshold.crossesThreshold(question.qid, Integer.parseInt(answer), myConn))
+                    addThresholdAlert(patientId, question.qid, myConn);
+            } catch (NumberFormatException e){
+                return;
+            }
         }
 
     }
