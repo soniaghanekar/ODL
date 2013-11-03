@@ -204,8 +204,10 @@ public class ODL {
 
     private static void displayAlertsForPatient(int patientId) throws MyException {
         List<Alert> alertList = Alert.getByPId(patientId, myConn);
-        for (Alert alert : alertList)
+        for (Alert alert : alertList){
             System.out.println(alert.text + " " + alert.timestamp);
+            alert.markViewed(myConn);
+        }
     }
 
     private static void enterData(int patientId) throws MyException {
