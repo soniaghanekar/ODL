@@ -103,6 +103,12 @@ public class Initializer {
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Weight", myConn);
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Exercise", myConn);
         PatientClassObservationTypeMapper.insertByClassNameAndTypeName("General", "Mood", myConn);
+
+        PatientClassObservationTypeMapper.insertByClassNameAndTypeName("HIV", "Exercise", myConn);
+        PatientClassObservationTypeMapper.insertByClassNameAndTypeName("HIV", "Mood", myConn);
+
+        PatientClassObservationTypeMapper.insertByClassNameAndTypeName("COPD", "Weight", myConn);
+        PatientClassObservationTypeMapper.insertByClassNameAndTypeName("COPD", "Mood", myConn);
     }
 
     private static void insertPatientClasses(MyConnection myConn) throws MyException {
