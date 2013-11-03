@@ -106,6 +106,21 @@ public class Patient {
         }
     }
 
+    public static List<Patient> findHealthFriendsAtRisk(Integer pid, MyConnection conn) throws MyException {
+        try {
+            List<Patient> friendsAtRisk = new ArrayList<Patient>();
+            String query = "select h.fid from healthfriend h,alert a where h.pid = "+pid+" and a.viewed='0' and a.pid=h.fid;";
+            ResultSet resultSet = conn.stmt.executeQuery(query);
+
+            while(resultSet.next())
+                friendsAtRisk.add(getById(resultSet.getInt(1), conn));
+            return friendsAtRisk;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new MyException("Could not find friends for this patient");
+        }
+    }
+
     public static List<Patient> getAllPatients(MyConnection myConn) throws MyException {
         List<Patient> patients = new ArrayList<Patient>();
         String query = "SELECT * from Patient";

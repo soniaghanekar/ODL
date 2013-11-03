@@ -126,6 +126,9 @@ public class ODL {
                 case '1':
                     findNewHealthFriend(pid);
                     break;
+                case '2':
+                    displayHealthFriendAtRisk(pid);
+                    break;
                 case '3':
                     shouldContinue = false;
                     break;
@@ -144,6 +147,12 @@ public class ODL {
             System.out.println(i + ". " + prospectiveFriends.get(i-1).name);
         int fid = Integer.parseInt(input.nextLine());
         HealthFriend.insert(pid, prospectiveFriends.get(fid-1).pid, myConn);
+    }
+
+    private static void displayHealthFriendAtRisk(int pid) throws MyException {
+        List<Patient> prospectiveFriends = Patient.findHealthFriendsAtRisk(pid, myConn);
+        for(int i = 1; i<= prospectiveFriends.size(); i++)
+            System.out.println(i + ". " + prospectiveFriends.get(i-1).name);
     }
 
     private static void deleteAlerts(int pid) throws MyException {
