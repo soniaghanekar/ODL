@@ -192,12 +192,12 @@ public class ODL {
     }
 
     private static void addAlertsForHealthFriends(int patientId, MyConnection myConn) throws MyException {
-        Patient patient = Patient.getById(patientId, myConn);
         List<Integer> ids = HealthFriend.getFriendsOfPatient(patientId, myConn);
         for(int id : ids) {
             if(Alert.ignoredAlertExists(id, myConn)) {
+                Patient patient = Patient.getById(id, myConn);
                 String message = "ALERT: " + patient.name + " has an observation that exceeds the threshold values";
-                Alert.insert(id, message, "0", new Date(), myConn);
+                Alert.insert(patientId, message, "0", new Date(), myConn);
             }
         }
     }
@@ -300,7 +300,6 @@ public class ODL {
             List<Observation> observations = Observation.filter(patientId, availableTypes.get(typeNo - 1),
                     getDateFromString(beginDate + " 0:0:1", "MM/dd/yyyy HH:mm:ss"),
                     getDateFromString(endDate + " 23:59:59", "MM/dd/yyyy HH:mm:ss"), myConn);
-            System.out.println("after filter");
             for (Observation o : observations) {
                 System.out.println(o.pid + " " + o.otid + " " + o.obvTimestamp + " " + o.recTimestamp + " " +
                         o.qid + " " + o.answer);
