@@ -205,7 +205,7 @@ public class ODL {
     private static void displayAlertsForPatient(int patientId) throws MyException {
         List<Alert> alertList = Alert.getByPId(patientId, myConn);
         for (Alert alert : alertList){
-            System.out.println(alert.text + " " + alert.timestamp);
+            System.out.println(alert.text + " GENERATED AT: " + alert.timestamp);
             alert.markViewed(myConn);
         }
     }
@@ -280,8 +280,8 @@ public class ODL {
     }
 
     private static void addThresholdAlert(int patientId, int qid, MyConnection myConn) throws MyException {
-        String message = "ALERT: Your values for the question: " + ObservationQuestion.getById(qid, myConn).text +
-                "crosses the threshold values";
+        String message = "ALERT: Your values for the question: " + qid +
+                " crosses the threshold values";
         Alert.insert(patientId, message, "0", new Date(), myConn);
     }
 

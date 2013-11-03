@@ -33,7 +33,7 @@ public class ObservationThreshold {
             String query = "select * from ObservationThreshold where qid = " + qid;
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next())
-                return rs.getInt("qid");
+                return rs.getInt("threshold");
 
         } catch (SQLException e) {
             throw new MyException("Could not get threshold for question with id = " + qid);
