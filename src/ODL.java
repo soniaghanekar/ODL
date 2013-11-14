@@ -300,9 +300,15 @@ public class ODL {
             List<Observation> observations = Observation.filter(patientId, availableTypes.get(typeNo - 1),
                     getDateFromString(beginDate + " 0:0:1", "MM/dd/yyyy HH:mm:ss"),
                     getDateFromString(endDate + " 23:59:59", "MM/dd/yyyy HH:mm:ss"), myConn);
-            for (Observation o : observations) {
-                System.out.println(o.pid + " " + o.otid + " " + o.obvTimestamp + " " + o.recTimestamp + " " +
-                        o.qid + " " + o.answer);
+            if(observations.size() > 0) {
+                System.out.println("Following are your observations: ");
+                for (Observation o : observations) {
+                    System.out.println("\nObservation Type: " + ObservationType.getById(o.otid, myConn).name +
+                            "\nObservation Timestamp: " + o.obvTimestamp +
+                            "\nRecord Timestamp: " + o.recTimestamp +
+                            "\nQuestion: " + ObservationQuestion.getById(o.qid, myConn).text +
+                            "\nAnswer: " + o.answer);
+                }
             }
         } catch (ParseException e) {
             e.printStackTrace();
