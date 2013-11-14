@@ -473,7 +473,7 @@ public class ODL {
         Timestamp end = new Timestamp(endTime.getTime());
 
         String func = getAggregateFunction();
-        String query = "select p.pid, "+func+"(*) from patient p, " +
+        String query = "select p.pid, "+func+"(o.answer) from patient p, " +
                 "observation o, PatientClassRelationship pc " +
                 "where pc.pid=p.pid and p.pid=o.pid and " +
                 "o.otid = "+observationType.otid+" and o.qid="+observationQuestion.qid+" and " +
