@@ -473,27 +473,14 @@ public class ODL {
         ObservationType observationType = getObservationTypeFromUser("Please select an Observation Type");
         ObservationQuestion observationQuestion = getObservationQuestionFromUser("Please select an Observation Question", observationType.otid);
 
-        System.out.println("Please enter the date range for filter: ");
-        String message1 = "Please enter start time in mm/dd/yyyy format eg. 03/08/1988:";
-        String format = "MM/dd/yyyy";
-        Date startTime = getDateFromUser(message1,format);
-
-        String message2 = "Please enter end time in mm/dd/yyyy format eg. 03/08/1988:";
-        Date endTime = getDateFromUser(message2,format);
-        Timestamp strt = new Timestamp(startTime.getTime());
-        Timestamp end = new Timestamp(endTime.getTime());
-
         String func = getAggregateFunction();
         String query = "select p.pid, "+func+"(o.answer) from patient p, " +
                 "observation o, PatientClassRelationship pc " +
                 "where pc.pid=p.pid and p.pid=o.pid and " +
                 "o.otid = "+observationType.otid+" and o.qid="+observationQuestion.qid+" and " +
-                "o.obvTimestamp >= ? and o.obvTimestamp <= ? " +
-                "and pc.cid = (select cid from PatientClass where name = "+patientClass.name+") group by p.pid";
+                "pc.cid = (select cid from PatientClass where name = "+patientClass.name+") group by p.pid";
         try {
             PreparedStatement pstmt = myConn.conn.prepareStatement(query);
-            pstmt.setTimestamp(1, strt);
-            pstmt.setTimestamp(2, end);
             ResultSet resultSet = pstmt.executeQuery();
             while (resultSet.next())
                 System.out.println(resultSet.getInt(1) + "\t" + resultSet.getInt(2));
