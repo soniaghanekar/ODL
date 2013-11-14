@@ -90,7 +90,7 @@ public class Patient {
             List<Patient> prospectiveFriends = new ArrayList<Patient>();
             String query = "select DISTINCT p.pid, p.name from patient p, PatientClassRelationship pc where p.pid <> " + this.pid +
                     " AND p.publicStatus = 'y' " + "AND p.pid in (select DISTINCT pid from PatientClassRelationship where cid in " +
-                    "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + "))";
+                    "(select DISTINCT cid from PatientClassRelationship where pid = "+ this.pid + " and cid <> 5))";
             ResultSet resultSet = null;
 
             resultSet = conn.stmt.executeQuery(query);
