@@ -74,10 +74,11 @@ public class ObservationType {
         }
     }
 
-    static void insertForCategory(String obsName, String catName, MyConnection connection) throws MyException {
+    static int insertForCategory(String obsName, String catName, MyConnection connection) throws MyException {
         int ocid = ObservationCategory.getCategoryIdByName(catName, connection);
         if (ocid != 0)
-            insert(obsName, ocid, connection);
+            return insert(obsName, ocid, connection);
+        return 0;
     }
 
     public static List<ObservationType> getAllTypes(MyConnection myConn) throws MyException {

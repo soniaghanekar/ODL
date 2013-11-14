@@ -224,7 +224,13 @@ public class ODL {
                     enterObservations(patientId);
                     break;
                 case '2':
-                    enterNewObservationType("General");
+                    ObservationCategory category = getObservationCategoryFromUser();
+                    int otid = enterNewObservationType(category.name);
+                    if(otid!=0){
+                        if(category.name.equals("Behavioral")){
+                            PatientClassObservationTypeMapper.insert(5, otid, myConn);
+                        }
+                    }
                     break;
                 case '3':
                     shouldContinue = false;
@@ -235,10 +241,10 @@ public class ODL {
         }
     }
 
-    private static void enterNewObservationType(String category) throws MyException {
+    private static int enterNewObservationType(String category) throws MyException {
         System.out.println("Enter the observation type name :");
         String name = input.nextLine();
-        ObservationType.insertForCategory(name, category, myConn);
+        int otid = ObservationType.insertForCategory(name, category, myConn);
         while (true) {
             System.out.println("Enter additional information question for the new type:");
             String question = input.nextLine();
@@ -247,7 +253,7 @@ public class ODL {
             char choice = input.nextLine().toLowerCase().charAt(0);
 
             if (choice == 'n')
-                return;
+                return otid;
         }
     }
 
@@ -416,8 +422,9 @@ public class ODL {
                 System.out.println("2. Change Category of Observation Type");
                 System.out.println("3. New Association between Observation Type and Patient Class");
                 System.out.println("4. Change Patient Class");
-                System.out.println("5. View Aggregated Report");
-                System.out.println("6. Logout");
+                System.out.println("5. View Patients");
+                System.out.println("6. View Aggregated Report");
+                System.out.println("7. Logout");
                 choice = input.nextLine().charAt(0);
 
                 switch (choice) {
@@ -440,10 +447,14 @@ public class ODL {
                         break;
 
                     case '5':
-                        aggregatedReport();
+                        getPatients();
                         break;
 
                     case '6':
+                        aggregatedReport();
+                        break;
+
+                    case '7':
                         logout = true;
                         System.out.println("You have been successfully logged out");
                         break;
@@ -500,16 +511,21 @@ public class ODL {
     }
 
     private static void changePatientClass() throws MyException {
+        List<Patient> patients = getPatients();
+        int pid = Integer.parseInt(input.nextLine());
+
+        PatientClass patientClass = getPatientClassFromUser("Please select a Patient Class");
+        patients.get(pid-1).addClass(patientClass.cid, myConn);
+    }
+
+    private static List<Patient> getPatients() throws MyException {
         List<Patient> patients = Patient.getAllPatients(myConn);
         System.out.println("Please select a patient you want to add Class for");
         System.out.println("No.\tPatient Id\tPatient Name");
         System.out.println("_____\t__________\t____________");
         for(int i = 1; i<= patients.size(); i++)
             System.out.println(i + ". \t" + patients.get(i-1).pid + "\t" + patients.get(i-1).name);
-        int pid = Integer.parseInt(input.nextLine());
-
-        PatientClass patientClass = getPatientClassFromUser("Please select a Patient Class");
-        patients.get(pid-1).addClass(patientClass.cid, myConn);
+        return patients;
     }
 
     private static PatientClass getPatientClassFromUser(String message) throws MyException {
