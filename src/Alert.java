@@ -66,7 +66,7 @@ public class Alert {
 
     void markViewed(MyConnection conn) throws MyException {
         this.viewed = "1";
-        String query = "UPDATE alert SET viewed = '1' where pid = "+this.pid+" AND text = " + this.text;
+        String query = "UPDATE alert SET viewed = '1' where pid = "+this.pid+" AND text = '" + this.text + "'";
         try {
             conn.stmt.executeUpdate(query);
         } catch (SQLException e) {
