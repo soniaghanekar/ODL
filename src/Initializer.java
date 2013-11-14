@@ -134,35 +134,35 @@ public class Initializer {
 
     private static void insertPatients(MyConnection connection) throws MyException {
         int pid;
-        pid = Patient.insert(getDateFromString("01/01/1988", "MM/dd/yyyy"), "Gary George", 2806, "Conifer Drive Raleigh", "NC 27606",
+        pid = Patient.insert(getDateFromString("01/01/1988", "MM/dd/yyyy"), "Gary George", 2806, "Conifer Drive", "NC 27606",
                 "m", "y", "geo123", connection);
         PatientClassRelationship.insert(pid, 1, connection);
 
-        pid = Patient.insert(getDateFromString("02/01/1982", "MM/dd/yyyy"), "Adnan Kazi", 1234, "Capability Drive Raleigh", "NC 27655",
+        pid = Patient.insert(getDateFromString("02/01/1982", "MM/dd/yyyy"), "Adnan Kazi", 1234, "Capability Drive", "NC 27655",
                 "f", "y", "kazi123", connection);
         PatientClassRelationship.insert(pid, 2, connection);
         PatientClassRelationship.insert(pid, 3, connection);
 
-        pid = Patient.insert(getDateFromString("01/01/1973", "MM/dd/yyyy"), "Neha Shetty", 440, "Sullivan Drive Raleigh", "NC 27517",
+        pid = Patient.insert(getDateFromString("01/01/1973", "MM/dd/yyyy"), "Neha Shetty", 440, "Sullivan Drive", "NC 27517",
                 "f", "y", "shetty123", connection);
         PatientClassRelationship.insert(pid, 2, connection);
         PatientClassRelationship.insert(pid, 3, connection);
 
-        pid = Patient.insert(getDateFromString("01/01/1980", "MM/dd/yyyy"), "Sheldon Cooper", 2808, "Avent Ferry Road Raleigh", "NC 27616",
+        pid = Patient.insert(getDateFromString("01/01/1980", "MM/dd/yyyy"), "Sheldon Cooper", 2808, "Avent Ferry Road", "NC 27616",
                 "f", "y", "cooper123", connection);
         PatientClassRelationship.insert(pid, 4, connection);
         PatientClassRelationship.insert(pid, 1, connection);
 
-        pid = Patient.insert(getDateFromString("01/01/1966", "MM/dd/yyyy"), "Michael Watson", 2222, "Gorman Street Raleigh", "NC 27678",
+        pid = Patient.insert(getDateFromString("01/01/1966", "MM/dd/yyyy"), "Michael Watson", 2222, "Gorman Street", "NC 27678",
                 "m", "y", "watson123", connection);
         PatientClassRelationship.insert(pid, 4, connection);
 
-        pid = Patient.insert(getDateFromString("01/01/1973", "MM/dd/yyyy"), "Tom Kerr", 1430, "Collegeview Ave Durham", "NC 27701",
+        pid = Patient.insert(getDateFromString("01/01/1973", "MM/dd/yyyy"), "Tom Kerr", 1430, "Collegeview Ave", "NC 27701",
                 "m", "y", "tkerr123", connection);
         PatientClassRelationship.insert(pid, 4, connection);
         PatientClassRelationship.insert(pid, 2, connection);
 
-        pid = Patient.insert(getDateFromString("01/01/1976", "MM/dd/yyyy"), "Maya Tran", 100, "Brown Circle Chapel Hill", "NC 27516",
+        pid = Patient.insert(getDateFromString("01/01/1976", "MM/dd/yyyy"), "Maya Tran", 100, "Brown Circle", "NC 27516",
                 "f", "y", "tran123", connection);
         PatientClassRelationship.insert(pid, 3, connection);
 
