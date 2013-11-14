@@ -34,10 +34,10 @@ public class Alert {
         return null;
     }
 
-    static List<Alert> getByPId(int pid, MyConnection conn) throws MyException {
+    static List<Alert> getUnviewedAlertsByPid(int pid, MyConnection conn) throws MyException {
         List<Alert> alertList = new ArrayList<Alert>();
         try {
-            String query = "select * from alert where pid = " + pid;
+            String query = "select * from alert where pid = " + pid + " AND viewed = '0'";
             ResultSet rs = conn.stmt.executeQuery(query);
             while (rs.next()) {
                 alertList.add(new Alert(rs.getInt("pid"), rs.getString("text"), rs.getString("viewed"), rs.getDate("timestamp")));

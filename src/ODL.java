@@ -203,7 +203,7 @@ public class ODL {
     }
 
     private static void displayAlertsForPatient(int patientId) throws MyException {
-        List<Alert> alertList = Alert.getByPId(patientId, myConn);
+        List<Alert> alertList = Alert.getUnviewedAlertsByPid(patientId, myConn);
         for (Alert alert : alertList){
             System.out.println(alert.text + " GENERATED AT: " + alert.timestamp);
             alert.markViewed(myConn);
