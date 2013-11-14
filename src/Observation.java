@@ -91,4 +91,19 @@ public class Observation {
         }
     }
 
+    static List<Observation> getAllObservations(MyConnection connection) throws MyException {
+        List<Observation> observations = new ArrayList<Observation>();
+        try {
+            String query = "SELECT * FROM Observation";
+            ResultSet rs = connection.stmt.executeQuery(query);
+            while (rs.next())
+                observations.add(new Observation(rs.getInt(1),rs.getInt(2), rs.getTimestamp(3),
+                        rs.getTimestamp(4),rs.getInt(5),rs.getString(6)));
+        } catch (SQLException e) {
+            throw new MyException("Error in retrieving Observation Categories");
+        }
+        return observations;
+    }
+
+
 }
